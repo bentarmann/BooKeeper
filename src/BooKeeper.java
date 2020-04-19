@@ -75,8 +75,8 @@ public class BooKeeper {
     Account furniture = new Account("Furniture & Fixtures");
     furniture.addIdentifier(nonCurrentAsset);
     
-    Account depres = new Account("Accumulated Depreciation");
-    depres.addIdentifier(nonCurrentAsset);
+    Account accDep = new Account("Accumulated Depreciation");
+    accDep.addIdentifier(nonCurrentAsset);
     
     // liability accounts
     int[] liability = {1, 1};
@@ -117,6 +117,65 @@ public class BooKeeper {
     retainedEarnings.addIdentifier(otherSSEItems);
     
     // income statement accounts
+    int[] operatingRevenue = {0,0};
+    
+    
+    Account sales = new Account("Sales");
+    sales.addIdentifier(operatingRevenue);
+    
+    //another name for sales
+    Account revenue = new Account("Revenue");
+    revenue.addIdentifier(operatingRevenue);
+    
+    Account salesRev = new Account("Sales Revenues");
+    salesRev.addIdentifier(operatingRevenue);
+    
+    Account serviceRev = new Account("Service Rev");
+    serviceRev.addIdentifier(operatingRevenue);
+    
+    Account feesEarned = new Account("Fees Earned");
+    feesEarned.addIdentifier(operatingRevenue);
+    
+    //A Contra-sales account
+    Account salesReturnsAndAllowances = new Account("Sales Returns and Allowances");
+    salesReturnsAndAllowances.addIdentifier(operatingRevenue);
+    
+    //also a contra sales account
+    Account salesDiscount = new Account("Sales Discount");
+    salesDiscount.addIdentifier(operatingRevenue);
+    
+    int[] operatingExp = {0,1};
+    
+    Account cogs = new Account("Cost of Goods Sold");
+    cogs.addIdentifier(operatingExp);
+    
+    Account sga = new Account("Selling, General and Administrative Expenses");
+    sga.addIdentifier(operatingExp);
+    
+    Account salariesExp = new Account("Salaries Expense");
+    salariesExp.addIdentifier(operatingExp);
+    
+    Account rentExp = new Account("rentExp");
+    rentExp.addIdentifier(operatingExp);
+    
+    Account utilitiesExp = new Account("Utilities Expense");
+    utilitiesExp.addIdentifier(operatingExp);
+    
+    Account depreciationExp = new Account("Depreciation Expense");
+    depreciationExp.addIdentifier(operatingExp);
+    
+    Account repairsExp = new Account("Repairs Expense");
+    repairsExp.addIdentifier(operatingExp);
+    
+    int[] nonOpRev = {0,2};
+    
+    Account interestRev = new Account("Interest Revenue");
+    interestRev.addIdentifier(nonOpRev);
+    
+    int[] nonOpExp = {0,3};
+    
+    Account interestExp = new Account("Interest Expense");
+    interestExp.addIdentifier(nonOpExp);
     
   }
 
