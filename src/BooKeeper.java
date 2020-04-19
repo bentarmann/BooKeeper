@@ -79,32 +79,33 @@ public class BooKeeper {
     accDep.addIdentifier(nonCurrentAsset);
     
     // liability accounts
-    int[] liability = {1, 1};
+    int[] currentLiability = {1, 1, 0};
+    int[] nonCurrentLiability = {1, 1, 1};
     
     Account sLoansPayable = new Account("Short-Term Loans Payable");
-    sLoansPayable.addIdentifier(liability);
+    sLoansPayable.addIdentifier(currentLiability);
     
     Account curLDebt = new Account("Current Portion of Long-Term Debt");
-    curLDebt.addIdentifier(liability);
+    curLDebt.addIdentifier(currentLiability);
     
     Account accountsPayable = new Account("Accounts Payable");
-    accountsPayable.addIdentifier(liability);
+    accountsPayable.addIdentifier(currentLiability);
     
     Account accruedExpenses = new Account("Accrued Expenses");
-    accruedExpenses.addIdentifier(liability);
+    accruedExpenses.addIdentifier(currentLiability);
     
     Account unearnedDeferredRev = new Account("Unearned or Deferred Revenues");
-    unearnedDeferredRev.addIdentifier(liability);
+    unearnedDeferredRev.addIdentifier(currentLiability);
     
     Account installmentLoansPayable = new Account("Installment Loans Payable");
-    installmentLoansPayable.addIdentifier(liability);
+    installmentLoansPayable.addIdentifier(nonCurrentLiability);
     
     Account mortgageLoansPayable = new Account("Mortgage Loans Payable");
-    mortgageLoansPayable.addIdentifier(liability);
+    mortgageLoansPayable.addIdentifier(nonCurrentLiability);
     
     // stockholders' equity accounts
-    int[] paidInCapital = {2, 0};
-    int[] otherSSEItems = {2, 1};
+    int[] paidInCapital = {1, 2, 0};
+    int[] otherSSEItems = {1, 2, 1};
     
     Account commonStock = new Account("Common Stock");
     commonStock.addIdentifier(paidInCapital);
