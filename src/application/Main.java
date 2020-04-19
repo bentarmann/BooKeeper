@@ -63,7 +63,7 @@ public class Main extends Application {
           BorderPane root = new BorderPane();
       
       //add elements here
-          
+          //
           //according to the GUI shown in the design
       
       Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
