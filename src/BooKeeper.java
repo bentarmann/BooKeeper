@@ -37,7 +37,7 @@ public class BooKeeper {
   public static void main(String[] args) {
     // asset accounts
     int[] currentAsset = {1,0,0};
-    int[] nonCurrentAsset = {1,0,1};
+    int[] ppe = {1,0,1};
     
     Account cash = new Account("Cash");
     cash.addIdentifier(currentAsset);
@@ -58,25 +58,25 @@ public class BooKeeper {
     supplies.addIdentifier(currentAsset);
     
     Account lInvest = new Account("Long-term Investments");
-    lInvest.addIdentifier(nonCurrentAsset);
+    lInvest.addIdentifier(ppe);
 
     Account land = new Account("Land");
-    land.addIdentifier(nonCurrentAsset);
+    land.addIdentifier(ppe);
 
     Account buildings = new Account("Buildings");
-    buildings.addIdentifier(nonCurrentAsset);
+    buildings.addIdentifier(ppe);
     
     Account equipment = new Account("Equipment");
-    equipment.addIdentifier(nonCurrentAsset);
+    equipment.addIdentifier(ppe);
     
     Account vehicles = new Account("Vehicles");
-    vehicles.addIdentifier(nonCurrentAsset);
+    vehicles.addIdentifier(ppe);
     
     Account furniture = new Account("Furniture & Fixtures");
-    furniture.addIdentifier(nonCurrentAsset);
-    
+    furniture.addIdentifier(ppe);
+   
     Account accDep = new Account("Accumulated Depreciation");
-    accDep.addIdentifier(nonCurrentAsset);
+    accDep.addIdentifier(ppe);
     
     // liability accounts
     int[] currentLiability = {1, 1, 0};
@@ -111,7 +111,7 @@ public class BooKeeper {
     commonStock.addIdentifier(paidInCapital);
     
     Account paidInCapitalInExcessOfParValue = new Account("Paid-In-Capital In Excess of the Par Value "
-    	+ "of the Common Stock");	
+        + "of the Common Stock");   
     paidInCapitalInExcessOfParValue.addIdentifier(paidInCapital);
     
     Account retainedEarnings = new Account("Retained Earnings");
