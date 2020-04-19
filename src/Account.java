@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 //////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
 //
 // Title:           Account.java 
@@ -22,7 +25,8 @@
 /////////////////////////////// 80 COLUMNS WIDE ///////////////////////////////
 
 /**
- * Account - TODO Description
+ * Account - Represents a single account including name 
+ * and its current amount
  * 
  * Bugs: none known
  * @author Qingqi Wu
@@ -31,4 +35,110 @@
  */
 public class Account {
 
+  private String accountName;
+  private int amount;
+  private List<int[]> identifierList;
+  
+  /**
+   * Constructor that initialized the account with given name and amount
+   * @param name
+   * @param amount
+   */
+  public Account(String name, int amount) {
+    this.accountName = name;
+    this.amount = amount;
+    this.identifierList = new ArrayList<>();
+  }
+  
+  /**
+   * Initializes the account with 0 amount
+   * @param name
+   */
+  public Account(String name) {
+    this(name,0);
+  }
+
+  /**
+   * @return the accountName
+   */
+  public String getAccountName() {
+    return accountName;
+  }
+
+  /**
+   * @param accountName the accountName to set
+   */
+  public void setAccountName(String accountName) {
+    this.accountName = accountName;
+  }
+
+  /**
+   * @return the amount
+   */
+  public int getAmount() {
+    return amount;
+  }
+
+  /**
+   * @param amount the amount to set
+   */
+  public void setAmount(int amount) {
+    this.amount = amount;
+  }
+  
+  /**
+   * Add the specified amount to the account's amount
+   * @param amountToAdd
+   * @return the resulting amount
+   */
+  public int addAmount(int amountToAdd) {
+    this.amount += amountToAdd;
+    return this.amount;
+  }
+
+  /**
+   * @return the identifier List
+   */
+  public List<int[]> getIdentifiers() {
+    return identifierList;
+  }
+
+  /**
+   * @param identifierList the identifierList to set
+   */
+  public void setIdentifierList(List<int[]> identifierList) {
+    this.identifierList = identifierList;
+  }
+  
+  /**
+   * Add an identifier to the List in an int array of length 2, 
+   *  i.e.[0,0]; First int means the financial statement [0 for 
+   *  income statement, 1 for balance sheet, 2 for stockholder's equity,
+   *  3 for statement of cashflows]
+   *  The second int means the sub categories, for more information, check out
+   *  the class diagram
+   *  @param identifier - int array of length 2
+   */
+  public void addIdentifier(int[] identifier) {
+    this.identifierList.add(identifier);
+  }
+  
+  /**
+   * Removes the specified identifier from this account
+   * @param identifier - int array of length 2
+   */
+  public boolean removeIdentifier(int[] identifier) {
+    return this.identifierList.remove(identifier);
+  }
+  
+  /**
+   * remove all identifiers of a given statement
+   * @param statement - [0 for income statement, 1 for balance sheet, 
+   * 2 for stockholder's equity, 3 for statement of cashflows]
+   * @return true if removed successfully
+   */
+  public boolean removeIdentifier(int statement) {
+    return this.identifierList.removeIf(tuple -> (tuple[0]==statement));
+  }
+  
 }

@@ -4,7 +4,7 @@
 // Files:           (a list of all source files used by that program)
 // Course:          CS400 Lec001, Spring, 2020
 //
-// Author:          Qingqi Wu
+// Author:          Qingqi Wu, Alexander Hertadi, Benjamin Tarmann
 // Email:           qwu86@wisc.edu
 // Lecturer's Name: Debra Deppeler
 //
