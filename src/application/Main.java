@@ -30,10 +30,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -65,13 +71,60 @@ public class Main extends Application {
       //add elements here
           //
           //according to the GUI shown in the design
-      
+          initializeTop(root);
+          
       Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+      
+      
 
       // Add the stuff and set the primary stage
           primaryStage.setTitle(APP_TITLE);
           primaryStage.setScene(mainScene);
           primaryStage.show();
+  }
+  
+  /**
+   * Initializes the elements at the top of the main BorderPane layout
+   * 
+   * @param root main BorderPane layout
+   */
+  public void initializeTop(BorderPane root) {
+      MenuBar topMb = new MenuBar();
+      Menu file = new Menu("File");
+      Menu edit = new Menu("Edit");
+      Menu find = new Menu("Find");
+      Menu window = new Menu("Window");
+      Menu help = new Menu("Help");
+      Menu about = new Menu("About");
+      topMb.getMenus().add(file);
+      topMb.getMenus().add(edit);
+      topMb.getMenus().add(find);
+      topMb.getMenus().add(window);
+      topMb.getMenus().add(help);
+      topMb.getMenus().add(about);
+      
+      // TODO: Add MenuItem objects and add them to menu options for desired implementations
+      
+      // create save button
+      Button save = new Button("Save");
+      
+      // create top tabs
+      TabPane tabpane = new TabPane();
+      // TODO: Figure out a way to add tabs and modify their content on demand. Perhaps create a method 
+      // that adds tabs as the user opens a new balance sheet. Removing a tab is already implemented 
+      // by the tabpane class
+      // Below loop adds tabs as a demonstration of how tabpane looks 	 
+      for (int i = 0; i < 20; i++) {
+	  tabpane.getTabs().add(new Tab("Tab " + i));
+      }
+      
+      // add elements to top
+      BorderPane top = new BorderPane();
+      top.setTop(topMb);
+      top.setRight(save);
+      top.setCenter(tabpane);
+         
+      root.setTop(top);
   }
 
   /**
