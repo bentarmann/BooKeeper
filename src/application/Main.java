@@ -64,7 +64,7 @@ public class Main extends Application {
       
       //add elements here
           
-          
+          //according to the GUI shown in the design
       
       Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
