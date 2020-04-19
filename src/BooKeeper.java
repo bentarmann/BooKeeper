@@ -5,7 +5,7 @@
 // Course:          CS400, Spring 2020
 //
 // Author:          Qingqi Wu, Alexander Hertadi, Benjamin Tarmann
-// Email:           qwu86@wisc.edu
+// Email:           qwu86@wisc.edu, btarmann@wisc.edu
 // Lecturer's Name: Debra Deppeler
 //
 ///////////////////////////// CREDIT OUTSIDE HELP /////////////////////////////
@@ -35,6 +35,7 @@ public class BooKeeper {
    * @param args
    */
   public static void main(String[] args) {
+    // asset accounts
     int[] currentAsset = {1,0,0};
     int[] nonCurrentAsset = {1,0,1};
     
@@ -76,6 +77,46 @@ public class BooKeeper {
     
     Account depres = new Account("Accumulated Depreciation");
     depres.addIdentifier(nonCurrentAsset);
+    
+    // liability accounts
+    int[] liability = {1, 1};
+    
+    Account sLoansPayable = new Account("Short-Term Loans Payable");
+    sLoansPayable.addIdentifier(liability);
+    
+    Account curLDebt = new Account("Current Portion of Long-Term Debt");
+    curLDebt.addIdentifier(liability);
+    
+    Account accountsPayable = new Account("Accounts Payable");
+    accountsPayable.addIdentifier(liability);
+    
+    Account accruedExpenses = new Account("Accrued Expenses");
+    accruedExpenses.addIdentifier(liability);
+    
+    Account unearnedDeferredRev = new Account("Unearned or Deferred Revenues");
+    unearnedDeferredRev.addIdentifier(liability);
+    
+    Account installmentLoansPayable = new Account("Installment Loans Payable");
+    installmentLoansPayable.addIdentifier(liability);
+    
+    Account mortgageLoansPayable = new Account("Mortgage Loans Payable");
+    mortgageLoansPayable.addIdentifier(liability);
+    
+    // stockholders' equity accounts
+    int[] paidInCapital = {2, 0};
+    int[] otherSSEItems = {2, 1};
+    
+    Account commonStock = new Account("Common Stock");
+    commonStock.addIdentifier(paidInCapital);
+    
+    Account paidInCapitalInExcessOfParValue = new Account("Paid-In-Capital In Excess of the Par Value "
+    	+ "of the Common Stock");	
+    paidInCapitalInExcessOfParValue.addIdentifier(paidInCapital);
+    
+    Account retainedEarnings = new Account("Retained Earnings");
+    retainedEarnings.addIdentifier(otherSSEItems);
+    
+    // income statement accounts
     
   }
 
