@@ -22,10 +22,18 @@
 /////////////////////////////// 80 COLUMNS WIDE ///////////////////////////////
 package application;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -37,6 +45,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
+import javafx.application.Application;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 /**
@@ -57,7 +73,7 @@ public class Main extends Application {
   private static final int WINDOW_WIDTH = 800;
   private static final int WINDOW_HEIGHT = 700;
   private static final String APP_TITLE = "BooKeeper v0.1";
-  private static Font font = new Font("Arial", 15);//TODO:add settings to change the font
+  private static Font font = new Font("Arial", 15);// TODO:add settings to change the font
 
   @Override
   public void start(Stage primaryStage) throws Exception {
@@ -73,12 +89,12 @@ public class Main extends Application {
     initializeTop(root);
 
     // initalize the main window
-    
+
     initializeMain(root);
 
-    //the left part
-    
-    
+    // the left part
+
+    initializeLeft(root);
 
     Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -213,7 +229,7 @@ public class Main extends Application {
     HBox deb = new HBox(debLabel, debAcct, debAmt);
     deb.setPrefHeight((t.getDebitAmounts().size() * 25));
     deb.setSpacing(5);
-    
+
     // create the credit part
     Label credLabel = new Label("Credit");
     credLabel.setFont(font);
@@ -223,19 +239,19 @@ public class Main extends Application {
     HBox cred = new HBox(credLabel, credAcct, credAmt);
     cred.setPrefHeight((t.getCreditAmounts().size() * 25));
     cred.setSpacing(5);
-    
+
     // combine these two
     VBox vb = new VBox(deb, cred);
     vb.setSpacing(5);
 
     // create a background fill
-    //BackgroundFill bf =
-        //new BackgroundFill(Color.DARKGREY, CornerRadii.EMPTY, Insets.EMPTY);
+    // BackgroundFill bf =
+    // new BackgroundFill(Color.DARKGREY, CornerRadii.EMPTY, Insets.EMPTY);
 
     // create Background
-    //Background bg = new Background(bf);
+    // Background bg = new Background(bf);
 
-    //vb.setBackground(bg);
+    // vb.setBackground(bg);
 
     return vb;
   }
@@ -300,6 +316,75 @@ public class Main extends Application {
 
     root.setTop(top);
   }
+
+  /**
+   * Initializes the elements at the left of the main BorderPane layout
+   * 
+   * @param root main BorderPane layout
+   */
+  public void initializeLeft(BorderPane root) {
+
+    TreeItem<Path> treeItem = new TreeItem<Path>(Paths.get("/home/alexh/Documents"));
+    treeItem.setExpanded(false);
+
+    // create tree structure
+    try {
+      createTree(treeItem);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    // sort tree structure by name
+    treeItem.getChildren().sort(Comparator.comparing(new Function<TreeItem<Path>, String>() {
+      @Override
+      public String apply(TreeItem<Path> t) {
+          String value = t.getValue().toString();
+          int indexOf = value.lastIndexOf(File.separator);
+          if (indexOf > 0) {
+            return value.substring(indexOf + 1);
+          } else {
+            return value;
+          }
+//        return t.getValue().toString().toLowerCase();
+
+      }
+    }));
+
+    // create components
+    BorderPane left = new BorderPane();
+    TreeView<Path> treeView = new TreeView<Path>(treeItem);
+    SplitPane splitView = new SplitPane();
+    splitView.getItems().add(treeView);
+
+    left.setCenter(splitView);
+    root.setLeft(left);
+  }
+
+  /**
+   * Recursively create the tree
+   * 
+   * @param rootItem
+   * @throws IOException
+   */
+  public static void createTree(TreeItem<Path> rootItem) throws IOException {
+
+    try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(rootItem.getValue())) {
+
+      for (Path path : directoryStream) {
+
+        TreeItem<Path> newItem = new TreeItem<Path>(path);
+        newItem.setExpanded(true);
+
+        rootItem.getChildren().add(newItem);
+
+        if (Files.isDirectory(path)) {
+          createTree(newItem);
+        }
+      }
+    }
+  }
+
+
 
   /**
    * @param args
