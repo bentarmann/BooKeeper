@@ -1,3 +1,4 @@
+package application;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -37,35 +38,52 @@ import java.util.ArrayList;
  */
 public class Transaction {
 
+  private int transactionNumber;
   private LocalDateTime date; //stores the local date and time
   private ArrayList<Account> debitAccounts;
   private ArrayList<Integer> debitAmounts;
   private ArrayList<Account> creditAccounts;
   private ArrayList<Integer> creditAmounts;
   
-  public Transaction(LocalDateTime date) {
+  public Transaction(LocalDateTime date, int transactionNumber) {
     this.date = date;
     debitAccounts = new ArrayList<>();
     debitAmounts = new ArrayList<>();
     creditAccounts = new ArrayList<>();
     creditAmounts = new ArrayList<>();
+    this.transactionNumber = transactionNumber;
   }
   
-  public Transaction() {
-    this(LocalDateTime.now());
+  public Transaction(int transactionNumber) {
+    this(LocalDateTime.now(), transactionNumber);
   }
   
   /**
    * Constructor that uses a String as the date
    * @param date with the format "MM-dd-yyyy HH:mm"
    */
-  public Transaction(String date) {
+  public Transaction(String date, int transactionNumber) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
     this.date = LocalDateTime.parse(date, formatter);;
     debitAccounts = new ArrayList<>();
     debitAmounts = new ArrayList<>();
     creditAccounts = new ArrayList<>();
     creditAmounts = new ArrayList<>();
+    this.transactionNumber = transactionNumber;
+  }
+
+  /**
+   * @return the transactionNumber
+   */
+  public int getTransactionNumber() {
+    return transactionNumber;
+  }
+
+  /**
+   * @param transactionNumber the transactionNumber to set
+   */
+  public void setTransactionNumber(int transactionNumber) {
+    this.transactionNumber = transactionNumber;
   }
 
   /**
@@ -75,6 +93,15 @@ public class Transaction {
     return date;
   }
 
+  /**
+   * Return the string representing the date and time
+   * @return MM-dd-yyyy HH:mm in String
+   */
+  public String getDateString() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+    return date.format(formatter);
+  }
+  
   /**
    * @param date the date to set
    */
