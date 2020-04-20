@@ -37,6 +37,7 @@ import java.util.function.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.*;
@@ -114,11 +115,33 @@ public class Main extends Application {
   private void initializeMain(BorderPane root) {
     BorderPane main = new BorderPane();
     HBox mainTop = new HBox();
-
+    
+    
+    
+    // create top tabs
+    TabPane tabpane = new TabPane();
+    // TODO: Figure out a way to add tabs and modify their content on demand. Perhaps create a
+    // method
+    // that adds tabs as the user opens a new balance sheet. Removing a tab is already implemented
+    // by the tabpane class
+    // Below loop adds tabs as a demonstration of how tabpane looks
+    for (int i = 0; i < 3; i++) {
+      tabpane.getTabs().add(new Tab("Tab " + i));
+    }
+    
+ // create save button
+    Button save = new Button("Save");
+    
+    HBox tabs = new HBox(tabpane,save);
+    tabs.setSpacing(20);
+    
+    
+    
     // TODO: add function to change the title
     Label title = new Label("Journal Entries");
     title.setFont(font);
     mainTop.getChildren().add(title);
+    
 
     // Search bar
 
@@ -133,7 +156,9 @@ public class Main extends Application {
     mainTop.setSpacing(5);
     mainTop.getChildren().add(searchBar);
 
-    main.setTop(mainTop);
+    VBox topBar = new VBox(tabs,mainTop);
+    
+    main.setTop(topBar);
 
 
 
@@ -154,7 +179,8 @@ public class Main extends Application {
     table.getColumns().add(dateCol);
 
     // Transaction Details column
-    TableColumn detailsCol = new TableColumn();
+    TableColumn detailsCol = new TableColumn("Transaction Details");
+    table.getColumns().add(detailsCol);
 
 
     // TODO: try not hard coding the items
@@ -294,25 +320,13 @@ public class Main extends Application {
 
     // TODO: Add MenuItem objects and add them to menu options for desired implementations
 
-    // create save button
-    Button save = new Button("Save");
+    
 
-    // create top tabs
-    TabPane tabpane = new TabPane();
-    // TODO: Figure out a way to add tabs and modify their content on demand. Perhaps create a
-    // method
-    // that adds tabs as the user opens a new balance sheet. Removing a tab is already implemented
-    // by the tabpane class
-    // Below loop adds tabs as a demonstration of how tabpane looks
-    for (int i = 0; i < 3; i++) {
-      tabpane.getTabs().add(new Tab("Tab " + i));
-    }
+    
 
     // add elements to top
     BorderPane top = new BorderPane();
     top.setTop(topMb);
-    top.setRight(save);
-    top.setCenter(tabpane);
 
     root.setTop(top);
   }
