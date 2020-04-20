@@ -324,7 +324,7 @@ public class Main extends Application {
    */
   public void initializeLeft(BorderPane root) {
 
-    TreeItem<Path> treeItem = new TreeItem<Path>(Paths.get("/home/alexh/Documents"));
+    TreeItem<Path> treeItem = new TreeItem<Path>(Paths.get(System.getProperty("user.dir")));
     treeItem.setExpanded(false);
 
     // create tree structure
