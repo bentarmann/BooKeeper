@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.function.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -55,6 +57,18 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.scene.control.ComboBox;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 /**
  * Main - TODO Description
@@ -71,8 +85,8 @@ public class Main extends Application {
   // NOTE: this.getParameters().getRaw() will get these also
   private List<String> args;
 
-  private static final int WINDOW_WIDTH = 800;
-  private static final int WINDOW_HEIGHT = 700;
+  private static final int WINDOW_WIDTH = 1200;
+  private static final int WINDOW_HEIGHT = 720;
   private static final String APP_TITLE = "BooKeeper v0.1";
   private static Font font = new Font("Arial", 15);// TODO:add settings to change the font
 
@@ -115,9 +129,9 @@ public class Main extends Application {
   private void initializeMain(BorderPane root) {
     BorderPane main = new BorderPane();
     HBox mainTop = new HBox();
-    
-    
-    
+
+
+
     // create top tabs
     TabPane tabpane = new TabPane();
     // TODO: Figure out a way to add tabs and modify their content on demand. Perhaps create a
@@ -128,20 +142,20 @@ public class Main extends Application {
     for (int i = 0; i < 3; i++) {
       tabpane.getTabs().add(new Tab("Tab " + i));
     }
-    
- // create save button
+
+    // create save button
     Button save = new Button("Save");
-    
-    HBox tabs = new HBox(tabpane,save);
+
+    HBox tabs = new HBox(tabpane, save);
     tabs.setSpacing(20);
-    
-    
-    
+
+
+
     // TODO: add function to change the title
     Label title = new Label("Journal Entries");
     title.setFont(font);
     mainTop.getChildren().add(title);
-    
+
 
     // Search bar
 
@@ -156,8 +170,8 @@ public class Main extends Application {
     mainTop.setSpacing(5);
     mainTop.getChildren().add(searchBar);
 
-    VBox topBar = new VBox(tabs,mainTop);
-    
+    VBox topBar = new VBox(tabs, mainTop);
+
     main.setTop(topBar);
 
 
@@ -320,9 +334,7 @@ public class Main extends Application {
 
     // TODO: Add MenuItem objects and add them to menu options for desired implementations
 
-    
 
-    
 
     // add elements to top
     BorderPane top = new BorderPane();
@@ -352,14 +364,14 @@ public class Main extends Application {
     treeItem.getChildren().sort(Comparator.comparing(new Function<TreeItem<Path>, String>() {
       @Override
       public String apply(TreeItem<Path> t) {
-          String value = t.getValue().toString();
-          int indexOf = value.lastIndexOf(File.separator);
-          if (indexOf > 0) {
-            return value.substring(indexOf + 1);
-          } else {
-            return value;
-          }
-//        return t.getValue().toString().toLowerCase();
+        String value = t.getValue().toString();
+        int indexOf = value.lastIndexOf(File.separator);
+        if (indexOf > 0) {
+          return value.substring(indexOf + 1);
+        } else {
+          return value;
+        }
+        // return t.getValue().toString().toLowerCase();
 
       }
     }));
@@ -370,9 +382,24 @@ public class Main extends Application {
     SplitPane splitView = new SplitPane();
     splitView.getItems().add(treeView);
 
-    left.setCenter(splitView);
+    FlowPane leftBot = new FlowPane();
+    leftBot.setPadding(new Insets(20, 0, 0, 30));
+    leftBot.setHgap(800000);
+    leftBot.setVgap(10);
+    Label style = new Label("Style Settings\n\nFont:");
+    ComboBox fontSel = new ComboBox();
+    Label fontSize = new Label("Size: ");
+    ComboBox fontSizer = new ComboBox();
+    Label line = new Label("Line Width:");
+    ComboBox lineChoose = new ComboBox();
+    leftBot.getChildren().addAll(style, fontSel, fontSize, fontSizer, line, lineChoose);
+
+
+    left.setTop(splitView);
+    left.setCenter(leftBot);
     root.setLeft(left);
   }
+
 
   /**
    * Recursively create the tree
