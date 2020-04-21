@@ -13,5 +13,3 @@ Which team members were on same xteam together?
 Qingqi Wu xTeam153
 
 Other notes or comments to the grader:
-
-[place any comments or notes that will help the grader here]
