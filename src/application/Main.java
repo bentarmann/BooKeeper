@@ -388,11 +388,20 @@ public class Main extends Application {
     leftBot.setVgap(10);
     Label style = new Label("Style Settings\n\nFont:");
     ComboBox fontSel = new ComboBox();
+    fontSel.getItems().add("Arial");//TODO: add font selections
+    fontSel.setValue("Arial");
+    
     Label fontSize = new Label("Size: ");
     ComboBox fontSizer = new ComboBox();
+    fontSizer.getItems().add("15");//TODO: add size settings
+    fontSizer.setValue("15");
+    
     Label line = new Label("Line Width:");
-    ComboBox lineChoose = new ComboBox();
-    leftBot.getChildren().addAll(style, fontSel, fontSize, fontSizer, line, lineChoose);
+    ComboBox lineWidth = new ComboBox();
+    lineWidth.getItems().add("1px");//TODO: add line width settings
+    lineWidth.setValue("1px");
+    
+    leftBot.getChildren().addAll(style, fontSel, fontSize, fontSizer, line, lineWidth);
 
 
     left.setTop(splitView);
