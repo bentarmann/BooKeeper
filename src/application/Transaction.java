@@ -64,7 +64,7 @@ public class Transaction {
    */
   public Transaction(String date, int transactionNumber) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-    this.date = LocalDateTime.parse(date, formatter);;
+    this.date = LocalDateTime.parse(date, formatter);
     debitAccounts = new ArrayList<>();
     debitAmounts = new ArrayList<>();
     creditAccounts = new ArrayList<>();
@@ -103,12 +103,22 @@ public class Transaction {
   }
   
   /**
+   * Set the date and time of this transaction
    * @param date the date to set
    */
   public void setDate(LocalDateTime date) {
     this.date = date;
   }
 
+  /**
+   * Set the date and time of this transaction using a string 
+   * @param date a string with format "MM-dd-yyyy HH:mm"
+   */
+  public void setDate(String date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+    this.date = LocalDateTime.parse(date, formatter);
+  }
+  
   /**
    * @return the debitAccounts
    */

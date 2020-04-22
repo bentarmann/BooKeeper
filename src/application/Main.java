@@ -85,8 +85,8 @@ public class Main extends Application {
   // NOTE: this.getParameters().getRaw() will get these also
   private List<String> args;
 
-  private static final int WINDOW_WIDTH = 1200;
-  private static final int WINDOW_HEIGHT = 720;
+  private static final int WINDOW_WIDTH = 800;
+  private static final int WINDOW_HEIGHT = 600;
   private static final String APP_TITLE = "BooKeeper v0.1";
   private static Font font = new Font("Arial", 15);// TODO:add settings to change the font
 
@@ -194,11 +194,13 @@ public class Main extends Application {
 
     // Transaction Details column
     TableColumn detailsCol = new TableColumn("Transaction Details");
+    detailsCol.setMinWidth(300);//fill the rest of screen
     table.getColumns().add(detailsCol);
 
 
     // TODO: try not hard coding the items
     Transaction t1 = new Transaction(1);
+    t1.setDate("04-20-2020 14:20");
     Account cash = new Account("Cash");
     t1.addDebitTransaction(cash, 99);
     Account inventory = new Account("Inventory");
@@ -206,13 +208,16 @@ public class Main extends Application {
     table.getItems().add(t1);
 
     Transaction t2 = new Transaction(2);
+    t2.setDate("04-20-2020 14:20");
     t2.addDebitTransaction(inventory, 100);
     t2.addCreditTransaction(cash, 100);
     table.getItems().add(t2);
 
+    
+    //Add expandable rows to show details
     table.setRowFactory(tr -> new TableRow<Transaction>() {
       Node transactionDetails;
-      {
+      {//on selection of the row
         this.selectedProperty().addListener((i, wasSelected, isSelected) -> {
           if (isSelected) {
             transactionDetails = constructSubTable(getItem());
@@ -224,7 +229,7 @@ public class Main extends Application {
         });
 
       }
-
+      //calculate the pref height
       @Override
       protected double computePrefHeight(double width) {
         if (isSelected()) {
@@ -233,7 +238,8 @@ public class Main extends Application {
           return super.computePrefHeight(width);
         }
       }
-
+      
+      //layout the sub table
       @Override
       protected void layoutChildren() {
         super.layoutChildren();
@@ -248,7 +254,7 @@ public class Main extends Application {
 
 
     main.setCenter(table);
-
+    //put the table and the topbars to main
     root.setCenter(main);
   }
 
@@ -259,25 +265,38 @@ public class Main extends Application {
    * @return
    */
   private VBox constructSubTable(Transaction t) {
-
+    
+    //create a delete button
+    //Image redX = new Image(getClass().getResourceAsStream("RedX.png"));
+    //Button xButton = new Button();
+    //xButton.setGraphic(new ImageView(redX));
+    //TODO:add deletion funtion
+    
     // create the debit part
     Label debLabel = new Label("Debit");
     debLabel.setFont(font);
+    debLabel.setMinWidth(45);
+    
     ListView debAcct =
         new ListView(FXCollections.observableArrayList(getAccountNames(t.getDebitAccounts())));
     ListView debAmt = new ListView(FXCollections.observableArrayList(t.getDebitAmounts()));
     HBox deb = new HBox(debLabel, debAcct, debAmt);
+
     deb.setPrefHeight((t.getDebitAmounts().size() * 25));
+    deb.setMaxWidth(250);
     deb.setSpacing(5);
 
     // create the credit part
     Label credLabel = new Label("Credit");
     credLabel.setFont(font);
+    credLabel.setMinWidth(45);
+    
     ListView credAcct =
         new ListView(FXCollections.observableArrayList(getAccountNames(t.getCreditAccounts())));
     ListView credAmt = new ListView(FXCollections.observableArrayList(t.getCreditAmounts()));
     HBox cred = new HBox(credLabel, credAcct, credAmt);
     cred.setPrefHeight((t.getCreditAmounts().size() * 25));
+    cred.setMaxWidth(250);
     cred.setSpacing(5);
 
     // combine these two
@@ -320,11 +339,30 @@ public class Main extends Application {
   public void initializeTop(BorderPane root) {
     MenuBar topMb = new MenuBar();
     Menu file = new Menu("File");
+    MenuItem newFile = new MenuItem("New File");
+    file.getItems().add(newFile);
+    MenuItem importFile = new MenuItem("Import");
+    file.getItems().add(importFile);
+    MenuItem exportFile = new MenuItem("Export");
+    file.getItems().add(exportFile);
+    
+    
     Menu edit = new Menu("Edit");
+    MenuItem insertEdit = new MenuItem("New Entry");
+    edit.getItems().add(insertEdit);
+    MenuItem deleteEdit = new MenuItem("Delete Entry");
+    edit.getItems().add(deleteEdit);
+    
     Menu find = new Menu("Find");
+    
     Menu window = new Menu("Window");
+    MenuItem settingsWindow = new MenuItem("Settings");
+    window.getItems().add(settingsWindow);
+    
     Menu help = new Menu("Help");
+    
     Menu about = new Menu("About");
+    
     topMb.getMenus().add(file);
     topMb.getMenus().add(edit);
     topMb.getMenus().add(find);
@@ -382,11 +420,12 @@ public class Main extends Application {
     SplitPane splitView = new SplitPane();
     splitView.getItems().add(treeView);
 
-    FlowPane leftBot = new FlowPane();
-    leftBot.setPadding(new Insets(20, 0, 0, 30));
-    leftBot.setHgap(800000);
-    leftBot.setVgap(10);
-    Label style = new Label("Style Settings\n\nFont:");
+    VBox leftBot = new VBox();
+    leftBot.setPadding(new Insets(10,0,0,15));
+    
+    Label style = new Label("Style Settings");
+    style.setFont(font);
+    Label fontSetting = new Label("Font:");
     ComboBox fontSel = new ComboBox();
     fontSel.getItems().add("Arial");//TODO: add font selections
     fontSel.setValue("Arial");
@@ -401,7 +440,7 @@ public class Main extends Application {
     lineWidth.getItems().add("1px");//TODO: add line width settings
     lineWidth.setValue("1px");
     
-    leftBot.getChildren().addAll(style, fontSel, fontSize, fontSizer, line, lineWidth);
+    leftBot.getChildren().addAll(style, fontSetting, fontSel, fontSize, fontSizer, line, lineWidth);
 
 
     left.setTop(splitView);
