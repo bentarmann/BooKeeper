@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Scanner;
 import java.util.function.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -42,6 +43,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -336,7 +338,7 @@ public class Main extends Application {
    * 
    * @param root main BorderPane layout
    */
-  public void initializeTop(BorderPane root) {
+  private void initializeTop(BorderPane root) {
     MenuBar topMb = new MenuBar();
     Menu file = new Menu("File");
     MenuItem newFile = new MenuItem("New File");
@@ -361,7 +363,26 @@ public class Main extends Application {
     
     Menu help = new Menu("Help");
     
+    // about menu
     Menu about = new Menu("About");
+    MenuItem readMe = new MenuItem("README");
+    readMe.setOnAction(e -> {
+	String message = "";
+	try {
+	    Scanner readMeFile = new Scanner(new File("README.txt"));
+	    while (readMeFile.hasNextLine()) {
+		message += readMeFile.nextLine() + "\n";
+	    }
+	}
+	catch (IOException exception) {
+	    message = "Error: README file could not be found.";
+	}
+	
+	Alert readMeAlert = new Alert(AlertType.INFORMATION, message);
+	readMeAlert.showAndWait();
+    });
+    about.getItems().add(readMe);
+    
     
     topMb.getMenus().add(file);
     topMb.getMenus().add(edit);
@@ -371,7 +392,7 @@ public class Main extends Application {
     topMb.getMenus().add(about);
 
     // TODO: Add MenuItem objects and add them to menu options for desired implementations
-
+    
 
 
     // add elements to top
@@ -386,7 +407,7 @@ public class Main extends Application {
    * 
    * @param root main BorderPane layout
    */
-  public void initializeLeft(BorderPane root) {
+  private void initializeLeft(BorderPane root) {
 
     TreeItem<Path> treeItem = new TreeItem<Path>(Paths.get(System.getProperty("user.dir")));
     treeItem.setExpanded(false);
