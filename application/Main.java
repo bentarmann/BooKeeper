@@ -23,7 +23,6 @@
 package application;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -31,48 +30,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.application.Application;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.scene.control.ComboBox;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.stage.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.event.*;
+
 
 /**
  * Main - TODO Description
@@ -94,7 +69,10 @@ public class Main extends Application {
   private static final String APP_TITLE = "BooKeeper v0.1";
   private static Font font = new Font("Arial", 15);// TODO:add settings to change the font
   private static int transactionNumber = 0;
-  private static TableView table = new TableView<>();
+  private static ArrayList<TableView> tables = new ArrayList<>();
+  
+  // stores the data imported, each tab uses a Bookings class
+  private static ArrayList<Bookings> data = new ArrayList<>();
 
   @Override
   public void start(Stage primaryStage) throws Exception {
@@ -103,27 +81,28 @@ public class Main extends Application {
 
     // Main layout is Border Pane example (top,left,center,right,bottom)
     BorderPane root = new BorderPane();
-    
+    TableView table = new TableView<>();
     // add elements here
     //
     // according to the GUI shown in the design
-    initializeTop(root, primaryStage);
+    initializeTop(root, primaryStage, table);
 
     // initalize the main window
 
-    initializeMain(root);
+    
+    initializeMain(root, table);
 
     // the left part
 
     initializeLeft(root);
-    
+
     Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Add the stuff and set the primary stage
     primaryStage.setTitle(APP_TITLE);
     primaryStage.setScene(mainScene);
-    
-    
+
+
     primaryStage.show();
   }
 
@@ -132,7 +111,7 @@ public class Main extends Application {
    * 
    * @param root
    */
-  private void initializeMain(BorderPane root) {
+  private void initializeMain(BorderPane root, TableView table) {
     BorderPane main = new BorderPane();
     HBox mainTop = new HBox();
 
@@ -200,7 +179,7 @@ public class Main extends Application {
 
     // Transaction Details column
     TableColumn detailsCol = new TableColumn("Transaction Details");
-    detailsCol.setMinWidth(300);//fill the rest of screen
+    detailsCol.setMinWidth(300);// fill the rest of screen
     table.getColumns().add(detailsCol);
 
 
@@ -219,11 +198,11 @@ public class Main extends Application {
     t2.addCreditTransaction(cash, 100);
     table.getItems().add(t2);
 
-    
-    //Add expandable rows to show details
+
+    // Add expandable rows to show details
     table.setRowFactory(tr -> new TableRow<Transaction>() {
       Node transactionDetails;
-      {//on selection of the row
+      {// on selection of the row
         this.selectedProperty().addListener((i, wasSelected, isSelected) -> {
           if (isSelected) {
             transactionDetails = constructSubTable(getItem());
@@ -235,7 +214,8 @@ public class Main extends Application {
         });
 
       }
-      //calculate the pref height
+
+      // calculate the pref height
       @Override
       protected double computePrefHeight(double width) {
         if (isSelected()) {
@@ -244,8 +224,8 @@ public class Main extends Application {
           return super.computePrefHeight(width);
         }
       }
-      
-      //layout the sub table
+
+      // layout the sub table
       @Override
       protected void layoutChildren() {
         super.layoutChildren();
@@ -260,7 +240,7 @@ public class Main extends Application {
 
 
     main.setCenter(table);
-    //put the table and the topbars to main
+    // put the table and the topbars to main
     root.setCenter(main);
   }
 
@@ -271,18 +251,18 @@ public class Main extends Application {
    * @return
    */
   private VBox constructSubTable(Transaction t) {
-    
-    //create a delete button
-    //Image redX = new Image(getClass().getResourceAsStream("RedX.png"));
-    //Button xButton = new Button();
-    //xButton.setGraphic(new ImageView(redX));
-    //TODO:add deletion funtion
-    
+
+    // create a delete button
+    // Image redX = new Image(getClass().getResourceAsStream("RedX.png"));
+    // Button xButton = new Button();
+    // xButton.setGraphic(new ImageView(redX));
+    // TODO:add deletion funtion
+
     // create the debit part
     Label debLabel = new Label("Debit");
     debLabel.setFont(font);
     debLabel.setMinWidth(45);
-    
+
     ListView debAcct =
         new ListView(FXCollections.observableArrayList(getAccountNames(t.getDebitAccounts())));
     ListView debAmt = new ListView(FXCollections.observableArrayList(t.getDebitAmounts()));
@@ -296,7 +276,7 @@ public class Main extends Application {
     Label credLabel = new Label("Credit");
     credLabel.setFont(font);
     credLabel.setMinWidth(45);
-    
+
     ListView credAcct =
         new ListView(FXCollections.observableArrayList(getAccountNames(t.getCreditAccounts())));
     ListView credAmt = new ListView(FXCollections.observableArrayList(t.getCreditAmounts()));
@@ -342,19 +322,45 @@ public class Main extends Application {
    * 
    * @param root main BorderPane layout
    */
-  private void initializeTop(BorderPane root, Stage primaryStage) {
+  private void initializeTop(BorderPane root, Stage primaryStage, TableView table) {
     MenuBar topMb = new MenuBar();
+
     Menu file = new Menu("File");
     MenuItem newFile = new MenuItem("New File");
     file.getItems().add(newFile);
+
+
+
+    FileChooser fileChooser = new FileChooser();
+    // import
     MenuItem importFile = new MenuItem("Import");
     file.getItems().add(importFile);
+    BooKeeper bk = new BooKeeper();
+    // add import function
+    importFile.setOnAction(e -> {
+
+      File fileToImport = fileChooser.showOpenDialog(primaryStage);
+      if (fileToImport != null) {
+        data.add(importFile(fileToImport,bk));
+      }
+      table.getItems().clear();
+      //replace table items with the most recent import
+      Bookings recent = data.get(data.size()-1);
+      //add all transactions into the table
+      table.getItems().addAll(recent.values());
+      transactionNumber = recent.getLatestTransactionID();
+    });
+
+
     MenuItem exportFile = new MenuItem("Export");
     file.getItems().add(exportFile);
-    
-    
+
+    //TODO:add a pointer to the current table in display
+
     Menu edit = new Menu("Edit");
     MenuItem insertEdit = new MenuItem("New Entry");
+    edit.getItems().add(insertEdit);
+    
     insertEdit.setOnAction(new EventHandler<>() {
       @Override
       public void handle(ActionEvent arg0) {
@@ -362,102 +368,100 @@ public class Main extends Application {
         transactionNumber++;
         table.getItems().add(t1);
       }
-      
+
     });
-    edit.getItems().add(insertEdit);
+    
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     edit.getItems().add(deleteEdit);
-    
+
     Menu find = new Menu("Find");
-    
+
     // window menu
     Menu window = new Menu("Window");
     MenuItem settingsWindow = new MenuItem("Settings");
     settingsWindow.setOnAction(e -> {
-	// setup new scene
-	VBox settingsVBox = new VBox();
-	HBox windowWidthHBox = new HBox();
-	HBox windowHeightHBox = new HBox();
-	Scene settingsScene = new Scene(settingsVBox, 350, 100);
-	
-	// add elements to scene
-	Label windowWidthLabel = new Label("Enter window width in pixels:  ");
-	TextField windowWidthTextField = new TextField("" + primaryStage.getWidth());
-	windowWidthHBox.getChildren().add(windowWidthLabel);
-	windowWidthHBox.getChildren().add(windowWidthTextField);
-	Label windowHeightLabel = new Label("Enter window height in pixels: ");
-	TextField windowHeightTextField = new TextField("" + primaryStage.getHeight());
-	windowHeightHBox.getChildren().add(windowHeightLabel);
-	windowHeightHBox.getChildren().add(windowHeightTextField);
-	settingsVBox.getChildren().add(windowWidthHBox);
-	settingsVBox.getChildren().add(windowHeightHBox);
-	
-	// set action for entering width and height
-	windowWidthTextField.setOnAction(action -> {
-	    String input = windowWidthTextField.getCharacters().toString();
-	    try {
-		double width = Double.parseDouble(input);
-		primaryStage.setWidth(width);
-	    }
-	    catch (NumberFormatException exception) {
-		Alert windowAlert = new Alert(AlertType.ERROR, "Please enter a valid number for the"
-			+ " width that is greater than 0.");
-		windowAlert.showAndWait();
-	    }
-	});
-	windowHeightTextField.setOnAction(action -> {
-	    String input = windowHeightTextField.getCharacters().toString();
-	    try {
-		double height = Double.parseDouble(input);
-		primaryStage.setHeight(height);
-	    }
-	    catch (NumberFormatException exception) {
-		Alert windowAlert = new Alert(AlertType.ERROR, "Please enter a valid number for the"
-			+ " height that is greater than 0.");
-		windowAlert.showAndWait();
-	    }
-	});
-	
-	// prepare and show scene
-	final Stage dialog = new Stage();
-	dialog.initModality(Modality.APPLICATION_MODAL);
-	dialog.initOwner(primaryStage);
-	dialog.setScene(settingsScene);
-	dialog.setTitle("Window Settings");
-	dialog.show();
+      // setup new scene
+      VBox settingsVBox = new VBox();
+      HBox windowWidthHBox = new HBox();
+      HBox windowHeightHBox = new HBox();
+      Scene settingsScene = new Scene(settingsVBox, 350, 100);
+
+      // add elements to scene
+      Label windowWidthLabel = new Label("Enter window width in pixels:  ");
+      TextField windowWidthTextField = new TextField("" + primaryStage.getWidth());
+      windowWidthHBox.getChildren().add(windowWidthLabel);
+      windowWidthHBox.getChildren().add(windowWidthTextField);
+      Label windowHeightLabel = new Label("Enter window height in pixels: ");
+      TextField windowHeightTextField = new TextField("" + primaryStage.getHeight());
+      windowHeightHBox.getChildren().add(windowHeightLabel);
+      windowHeightHBox.getChildren().add(windowHeightTextField);
+      settingsVBox.getChildren().add(windowWidthHBox);
+      settingsVBox.getChildren().add(windowHeightHBox);
+
+      // set action for entering width and height
+      windowWidthTextField.setOnAction(action -> {
+        String input = windowWidthTextField.getCharacters().toString();
+        try {
+          double width = Double.parseDouble(input);
+          primaryStage.setWidth(width);
+        } catch (NumberFormatException exception) {
+          Alert windowAlert = new Alert(AlertType.ERROR,
+              "Please enter a valid number for the" + " width that is greater than 0.");
+          windowAlert.showAndWait();
+        }
+      });
+      
+      windowHeightTextField.setOnAction(action -> {
+        String input = windowHeightTextField.getCharacters().toString();
+        try {
+          double height = Double.parseDouble(input);
+          primaryStage.setHeight(height);
+        } catch (NumberFormatException exception) {
+          Alert windowAlert = new Alert(AlertType.ERROR,
+              "Please enter a valid number for the" + " height that is greater than 0.");
+          windowAlert.showAndWait();
+        }
+      });
+
+      // prepare and show scene
+      final Stage dialog = new Stage();
+      dialog.initModality(Modality.APPLICATION_MODAL);
+      dialog.initOwner(primaryStage);
+      dialog.setScene(settingsScene);
+      dialog.setTitle("Window Settings");
+      dialog.show();
     });
     window.getItems().add(settingsWindow);
-    
+
     // help menu
     Menu help = new Menu("Help");
     help.setOnAction(e -> {
-	// TODO: Add message or functionality to get help. Perhaps create a text file containing
-	//       a description of the functionality of the program that can be displayed when
-	//       this menu button is pressed
-	Alert helpAlert = new Alert(AlertType.INFORMATION, "");
+      // TODO: Add message or functionality to get help. Perhaps create a text file containing
+      // a description of the functionality of the program that can be displayed when
+      // this menu button is pressed
+      Alert helpAlert = new Alert(AlertType.INFORMATION, "");
     });
-    
+
     // about menu
     Menu about = new Menu("About");
     MenuItem readMe = new MenuItem("README");
     readMe.setOnAction(e -> {
-	String message = "";
-	try {
-	    Scanner readMeFile = new Scanner(new File("README.txt"));
-	    while (readMeFile.hasNextLine()) {
-		message += readMeFile.nextLine() + "\n";
-	    }
-	}
-	catch (IOException exception) {
-	    message = "Error: README file could not be found.";
-	}
-	
-	Alert readMeAlert = new Alert(AlertType.INFORMATION, message);
-	readMeAlert.showAndWait();
+      String message = "";
+      try {
+        Scanner readMeFile = new Scanner(new File("README.txt"));
+        while (readMeFile.hasNextLine()) {
+          message += readMeFile.nextLine() + "\n";
+        }
+      } catch (IOException exception) {
+        message = "Error: README file could not be found.";
+      }
+
+      Alert readMeAlert = new Alert(AlertType.INFORMATION, message);
+      readMeAlert.showAndWait();
     });
     about.getItems().add(readMe);
-    
-    
+
+
     topMb.getMenus().add(file);
     topMb.getMenus().add(edit);
     topMb.getMenus().add(find);
@@ -466,7 +470,7 @@ public class Main extends Application {
     topMb.getMenus().add(about);
 
     // TODO: Add MenuItem objects and add them to menu options for desired implementations
-    
+
 
 
     // add elements to top
@@ -516,25 +520,25 @@ public class Main extends Application {
     splitView.getItems().add(treeView);
 
     VBox leftBot = new VBox();
-    leftBot.setPadding(new Insets(10,0,0,15));
-    
+    leftBot.setPadding(new Insets(10, 0, 0, 15));
+
     Label style = new Label("Style Settings");
     style.setFont(font);
     Label fontSetting = new Label("Font:");
     ComboBox fontSel = new ComboBox();
-    fontSel.getItems().add("Arial");//TODO: add font selections
+    fontSel.getItems().add("Arial");// TODO: add font selections
     fontSel.setValue("Arial");
-    
+
     Label fontSize = new Label("Size: ");
     ComboBox fontSizer = new ComboBox();
-    fontSizer.getItems().add("15");//TODO: add size settings
+    fontSizer.getItems().add("15");// TODO: add size settings
     fontSizer.setValue("15");
-    
+
     Label line = new Label("Line Width:");
     ComboBox lineWidth = new ComboBox();
-    lineWidth.getItems().add("1px");//TODO: add line width settings
+    lineWidth.getItems().add("1px");// TODO: add line width settings
     lineWidth.setValue("1px");
-    
+
     leftBot.getChildren().addAll(style, fontSetting, fontSel, fontSize, fontSizer, line, lineWidth);
 
 
@@ -568,8 +572,89 @@ public class Main extends Application {
     }
   }
 
+  /**
+   * Open a file in the csv format and return a Bookings class
+   * 
+   * @param f
+   * @return
+   */
+  private static Bookings importFile(File f, BooKeeper bk) {
+    Bookings booking = new Bookings(f.getName());
+    
+    try {
+      Scanner sc = new Scanner(f);
+      while (sc.hasNextLine()) {
+        String line = sc.nextLine();
+        //split each line into string arrays
+        //the RegEx here split the items by comma and ignores commas in brackets
+        String[] val = line.split(",(?![^\\[]*\\])");
+        Transaction trans = new Transaction(val[1],Integer.parseInt(val[0]));
+        
+        //parse debit
+        ArrayList<Account> debits = parseAccountList(parseArrayList(val[2],false),bk);
+        trans.setDebitAccounts(debits);
+        trans.setDebitAmounts(parseArrayList(val[3],true));
+        
+        //parse credit
+        ArrayList<Account> credits = parseAccountList(parseArrayList(val[4],false),bk);
+        trans.setCreditAccounts(credits);
+        trans.setCreditAmounts(parseArrayList(val[5],true));
+        
+        //put it into the booking with K=transactionID, V=Transaction
+        booking.put(val[0], trans);
+        
+      }
+      
+      sc.close();
+      
+      Alert success = new Alert(AlertType.CONFIRMATION,"Import Success!");
+      success.showAndWait();
+    } catch (Exception e) {
+      e.printStackTrace();
+      String importError = "Something wrong happen while reading the file!";
+      Alert importAlert = new Alert(AlertType.ERROR, importError);
+      importAlert.showAndWait();
+    }
 
+    
+    return booking;
+  }
 
+  /**
+   * return an array list from a list in string format
+   * @param list - a string i.e. "[1,2,3]"
+   * @param isNumber - whether this is a String of an array of numbers
+   * @return
+   */
+  private static ArrayList parseArrayList(String list, boolean isNumber) {
+    list = list.replace("[","").replace("]","");
+    
+    
+    String[] strList = list.split(",");
+    ArrayList<String> result = new ArrayList<>(Arrays.asList(strList));
+    
+    if(isNumber) {
+      ArrayList<Integer> numbers = new ArrayList<>();
+      for (String item : result) {
+        numbers.add(Integer.parseInt(item));
+      }
+      return numbers;
+    } else {
+      
+      return result;
+    }
+  }
+  
+  private static ArrayList<Account> parseAccountList(List<String> acctList, BooKeeper bk) {
+    ArrayList<Account> accounts = new ArrayList<>();
+    
+    for(String acctName : acctList) {
+      accounts.add(bk.getAccount(acctName.trim()));
+    }
+    
+    return accounts;
+  }
+  
   /**
    * @param args
    */

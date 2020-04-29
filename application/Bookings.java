@@ -39,7 +39,8 @@ import java.util.Hashtable;
 public class Bookings extends Hashtable<String, Transaction> {
 
   public String title;
-  
+  private int latestTransactionID;
+  private Transaction latestTransaction;
   /**
    * Initializes the hashtable
    * @param title
@@ -48,5 +49,43 @@ public class Bookings extends Hashtable<String, Transaction> {
     super();
     this.title = title;
   }
+  
+  /**
+   * Add a method to track the latest transaction and its ID
+   */
+  @Override
+  public synchronized Transaction put(String key, Transaction value) {
+    this.latestTransactionID = Integer.parseInt(key);
+    this.latestTransaction = value;
+    return super.put(key, value);
+  }
+  
+  /**
+   * @return the latestTransaction
+   */
+  public Transaction getLatestTransaction() {
+    return latestTransaction;
+  }
+  /**
+   * @param latestTransaction the latestTransaction to set
+   */
+  public void setLatestTransaction(Transaction latestTransaction) {
+    this.latestTransaction = latestTransaction;
+  }
+
+  /**
+   * @return the latestTransactionID
+   */
+  public int getLatestTransactionID() {
+    return latestTransactionID;
+  }
+
+  /**
+   * @param latestTransactionID the latestTransactionID to set
+   */
+  public void setLatestTransactionID(int latestTransactionID) {
+    this.latestTransactionID = latestTransactionID;
+  }
+  
   
 }
