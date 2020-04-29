@@ -37,6 +37,7 @@ import java.util.Scanner;
 import java.util.function.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -92,6 +93,8 @@ public class Main extends Application {
   private static final int WINDOW_HEIGHT = 600;
   private static final String APP_TITLE = "BooKeeper v0.1";
   private static Font font = new Font("Arial", 15);// TODO:add settings to change the font
+  private static int transactionNumber = 0;
+  private static TableView table = new TableView<>();
 
   @Override
   public void start(Stage primaryStage) throws Exception {
@@ -179,7 +182,7 @@ public class Main extends Application {
 
 
 
-    TableView table = new TableView<>();
+    
     table.setEditable(true);
 
     // transaction number column
@@ -352,6 +355,15 @@ public class Main extends Application {
     
     Menu edit = new Menu("Edit");
     MenuItem insertEdit = new MenuItem("New Entry");
+    insertEdit.setOnAction(new EventHandler<>() {
+      @Override
+      public void handle(ActionEvent arg0) {
+        Transaction t1 = new Transaction(transactionNumber);
+        transactionNumber++;
+        table.getItems().add(t1);
+      }
+      
+    });
     edit.getItems().add(insertEdit);
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     edit.getItems().add(deleteEdit);
