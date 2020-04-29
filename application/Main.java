@@ -92,7 +92,9 @@ public class Main extends Application {
   private static final int WINDOW_HEIGHT = 600;
   private static final String APP_TITLE = "BooKeeper v0.1";
   private static Font font = new Font("Arial", 15);// TODO:add settings to change the font
-
+  //stores the data imported, each tab uses a Bookings class
+  private static ArrayList<Bookings> data = new ArrayList<>();
+  
   @Override
   public void start(Stage primaryStage) throws Exception {
     // save args example
@@ -341,11 +343,19 @@ public class Main extends Application {
    */
   private void initializeTop(BorderPane root, Stage primaryStage) {
     MenuBar topMb = new MenuBar();
+    
     Menu file = new Menu("File");
     MenuItem newFile = new MenuItem("New File");
     file.getItems().add(newFile);
+    
+    //import
     MenuItem importFile = new MenuItem("Import");
     file.getItems().add(importFile);
+    
+    
+    
+    Stage importWindow = new Stage();
+    
     MenuItem exportFile = new MenuItem("Export");
     file.getItems().add(exportFile);
     
