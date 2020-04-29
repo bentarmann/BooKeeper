@@ -31,6 +31,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -50,7 +51,7 @@ import javafx.event.*;
 
 
 /**
- * Main - TODO Description
+ * Main - The GUI implementation of the BooKeeper application
  * 
  * Bugs: none known
  * 
@@ -66,35 +67,42 @@ public class Main extends Application {
 
   private static final int WINDOW_WIDTH = 800;
   private static final int WINDOW_HEIGHT = 600;
-  private static final String APP_TITLE = "BooKeeper v0.1";
+  private static final String APP_TITLE = "BooKeeper v0.2";
   private static Font font = new Font("Arial", 15);// TODO:add settings to change the font
-  private static int transactionNumber = 0;
+  private static int transactionNumber = 1;
+  //stores the tables for display
   private static ArrayList<TableView> tables = new ArrayList<>();
+  //tracks the current table's index in the tables field
+  private static int currentTable = 0;
   
+  private static int currentTab = 0;
+  private static TabPane tabs = new TabPane();
   // stores the data imported, each tab uses a Bookings class
   private static ArrayList<Bookings> data = new ArrayList<>();
 
+  //the main layoput
+  private static BorderPane root = new BorderPane();
+  private static ArrayList<BorderPane> mains = new ArrayList<>();
+  
+  /**
+   * Starting GUI of the application
+   */
   @Override
   public void start(Stage primaryStage) throws Exception {
     // save args example
-    args = this.getParameters().getRaw();
+    args = this.getParameters().getRaw(); 
+    
+    //Creates the new Table
+    TableView table = createTable();
 
-    // Main layout is Border Pane example (top,left,center,right,bottom)
-    BorderPane root = new BorderPane();
-    TableView table = new TableView<>();
-    // add elements here
-    //
-    // according to the GUI shown in the design
-    initializeTop(root, primaryStage, table);
+    //Top menubars
+    initializeTop(primaryStage);
 
     // initalize the main window
+    initializeMain();
 
-    
-    initializeMain(root, table);
-
-    // the left part
-
-    initializeLeft(root);
+    // the left file view and settings
+    initializeLeft();
 
     Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -111,27 +119,16 @@ public class Main extends Application {
    * 
    * @param root
    */
-  private void initializeMain(BorderPane root, TableView table) {
-    BorderPane main = new BorderPane();
+  private void initializeMain() {
+    
+    BorderPane main = createMain();
     HBox mainTop = new HBox();
 
-
-
-    // create top tabs
-    TabPane tabpane = new TabPane();
-    // TODO: Figure out a way to add tabs and modify their content on demand. Perhaps create a
-    // method
-    // that adds tabs as the user opens a new balance sheet. Removing a tab is already implemented
-    // by the tabpane class
-    // Below loop adds tabs as a demonstration of how tabpane looks
-    for (int i = 0; i < 3; i++) {
-      tabpane.getTabs().add(new Tab("Tab " + i));
-    }
 
     // create save button
     Button save = new Button("Save");
 
-    HBox tabs = new HBox(tabpane, save);
+    HBox tabs = new HBox(this.tabs, save);
     tabs.setSpacing(20);
 
 
@@ -159,7 +156,7 @@ public class Main extends Application {
 
     main.setTop(topBar);
 
-
+    TableView table = tables.get(currentTable);
 
     
     table.setEditable(true);
@@ -322,7 +319,7 @@ public class Main extends Application {
    * 
    * @param root main BorderPane layout
    */
-  private void initializeTop(BorderPane root, Stage primaryStage, TableView table) {
+  private void initializeTop(Stage primaryStage) {
     MenuBar topMb = new MenuBar();
 
     Menu file = new Menu("File");
@@ -343,12 +340,16 @@ public class Main extends Application {
       if (fileToImport != null) {
         data.add(importFile(fileToImport,bk));
       }
-      table.getItems().clear();
-      //replace table items with the most recent import
-      Bookings recent = data.get(data.size()-1);
-      //add all transactions into the table
-      table.getItems().addAll(recent.values());
-      transactionNumber = recent.getLatestTransactionID();
+      TableView table = createTable();
+      //set current table to the latest one
+      currentTable = tables.size() - 1;
+      
+      tabs.getTabs().add(new Tab("Journal Entry" + currentTab));
+      currentTab++;
+      
+      updateTable();
+      //updates the transaction number as the most recent version
+      transactionNumber = getRecent().getLatestTransactionID();
     });
 
 
@@ -361,15 +362,14 @@ public class Main extends Application {
     MenuItem insertEdit = new MenuItem("New Entry");
     edit.getItems().add(insertEdit);
     
-    insertEdit.setOnAction(new EventHandler<>() {
-      @Override
-      public void handle(ActionEvent arg0) {
+    insertEdit.setOnAction(e-> {
         Transaction t1 = new Transaction(transactionNumber);
         transactionNumber++;
-        table.getItems().add(t1);
+        TableView curTable = tables.get(currentTable);
+        curTable.getItems().add(t1);
       }
 
-    });
+    );
     
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     edit.getItems().add(deleteEdit);
@@ -485,7 +485,7 @@ public class Main extends Application {
    * 
    * @param root main BorderPane layout
    */
-  private void initializeLeft(BorderPane root) {
+  private void initializeLeft() {
 
     TreeItem<Path> treeItem = new TreeItem<Path>(Paths.get(System.getProperty("user.dir")));
     treeItem.setExpanded(false);
@@ -645,6 +645,12 @@ public class Main extends Application {
     }
   }
   
+  /**
+   * Return a list of accounts that derived from a list of strings
+   * @param acctList List of strings that contains account names
+   * @param bk the book keeper class that tracking the current bookings
+   * @return list of Account classes with references to the ones in the bookings class
+   */
   private static ArrayList<Account> parseAccountList(List<String> acctList, BooKeeper bk) {
     ArrayList<Account> accounts = new ArrayList<>();
     
@@ -653,6 +659,54 @@ public class Main extends Application {
     }
     
     return accounts;
+  }
+  
+  /**
+   * Return a new table and store it in the tables
+   * @return a new table
+   */
+  private static TableView createTable() {
+    TableView newTable = new TableView();
+    tables.add(newTable);
+    return newTable;
+  }
+  
+  /**
+   * Return a new borderpane and store it in the mains
+   * @return a new main border pane
+   */
+  private static BorderPane createMain() {
+    BorderPane mainPane = new BorderPane();
+    mains.add(mainPane);
+    return mainPane;
+  }
+  
+/**
+ * updates the table displayed as the current table
+ * @param values a collection of values
+ */
+  private static void updateTable(Collection<Transaction> values) {
+    TableView currentTable = (TableView) ((BorderPane) root.getCenter()).getCenter();
+    currentTable.getItems().clear();
+    currentTable.getItems().addAll(values);
+  }
+  
+  /**
+   * Updates the table to the most recent data
+   */
+  private static void updateTable() {
+  //replace table items with the most recent import
+    Bookings recent = getRecent();
+    //add all transactions into the table
+    updateTable(recent.values());
+  }
+  
+  /**
+   * Returns the most recent bookings data entered
+   * @return
+   */
+  private static Bookings getRecent() {
+    return data.get(data.size()-1);
   }
   
   /**
