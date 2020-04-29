@@ -50,6 +50,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.application.Application;
 import javafx.scene.Node;
@@ -99,11 +100,11 @@ public class Main extends Application {
 
     // Main layout is Border Pane example (top,left,center,right,bottom)
     BorderPane root = new BorderPane();
-
+    
     // add elements here
     //
     // according to the GUI shown in the design
-    initializeTop(root);
+    initializeTop(root, primaryStage);
 
     // initalize the main window
 
@@ -112,14 +113,14 @@ public class Main extends Application {
     // the left part
 
     initializeLeft(root);
-
+    
     Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-
 
     // Add the stuff and set the primary stage
     primaryStage.setTitle(APP_TITLE);
     primaryStage.setScene(mainScene);
+    
+    
     primaryStage.show();
   }
 
@@ -338,7 +339,7 @@ public class Main extends Application {
    * 
    * @param root main BorderPane layout
    */
-  private void initializeTop(BorderPane root) {
+  private void initializeTop(BorderPane root, Stage primaryStage) {
     MenuBar topMb = new MenuBar();
     Menu file = new Menu("File");
     MenuItem newFile = new MenuItem("New File");
@@ -357,11 +358,72 @@ public class Main extends Application {
     
     Menu find = new Menu("Find");
     
+    // window menu
     Menu window = new Menu("Window");
     MenuItem settingsWindow = new MenuItem("Settings");
+    settingsWindow.setOnAction(e -> {
+	// setup new scene
+	VBox settingsVBox = new VBox();
+	HBox windowWidthHBox = new HBox();
+	HBox windowHeightHBox = new HBox();
+	Scene settingsScene = new Scene(settingsVBox, 350, 100);
+	
+	// add elements to scene
+	Label windowWidthLabel = new Label("Enter window width in pixels:  ");
+	TextField windowWidthTextField = new TextField("" + primaryStage.getWidth());
+	windowWidthHBox.getChildren().add(windowWidthLabel);
+	windowWidthHBox.getChildren().add(windowWidthTextField);
+	Label windowHeightLabel = new Label("Enter window height in pixels: ");
+	TextField windowHeightTextField = new TextField("" + primaryStage.getHeight());
+	windowHeightHBox.getChildren().add(windowHeightLabel);
+	windowHeightHBox.getChildren().add(windowHeightTextField);
+	settingsVBox.getChildren().add(windowWidthHBox);
+	settingsVBox.getChildren().add(windowHeightHBox);
+	
+	// set action for entering width and height
+	windowWidthTextField.setOnAction(action -> {
+	    String input = windowWidthTextField.getCharacters().toString();
+	    try {
+		double width = Double.parseDouble(input);
+		primaryStage.setWidth(width);
+	    }
+	    catch (NumberFormatException exception) {
+		Alert windowAlert = new Alert(AlertType.ERROR, "Please enter a valid number for the"
+			+ " width that is greater than 0.");
+		windowAlert.showAndWait();
+	    }
+	});
+	windowHeightTextField.setOnAction(action -> {
+	    String input = windowHeightTextField.getCharacters().toString();
+	    try {
+		double height = Double.parseDouble(input);
+		primaryStage.setHeight(height);
+	    }
+	    catch (NumberFormatException exception) {
+		Alert windowAlert = new Alert(AlertType.ERROR, "Please enter a valid number for the"
+			+ " height that is greater than 0.");
+		windowAlert.showAndWait();
+	    }
+	});
+	
+	// prepare and show scene
+	final Stage dialog = new Stage();
+	dialog.initModality(Modality.APPLICATION_MODAL);
+	dialog.initOwner(primaryStage);
+	dialog.setScene(settingsScene);
+	dialog.setTitle("Window Settings");
+	dialog.show();
+    });
     window.getItems().add(settingsWindow);
     
+    // help menu
     Menu help = new Menu("Help");
+    help.setOnAction(e -> {
+	// TODO: Add message or functionality to get help. Perhaps create a text file containing
+	//       a description of the functionality of the program that can be displayed when
+	//       this menu button is pressed
+	Alert helpAlert = new Alert(AlertType.INFORMATION, "");
+    });
     
     // about menu
     Menu about = new Menu("About");
