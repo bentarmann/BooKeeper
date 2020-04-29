@@ -94,6 +94,7 @@ public class Main extends Application {
     
     //Creates the new Table
     TableView table = createTable();
+    table.setStyle("-fx-font: 12px Arial;\n");
 
     //Top menubars
     initializeTop(primaryStage);
@@ -102,7 +103,7 @@ public class Main extends Application {
     initializeMain();
 
     // the left file view and settings
-    initializeLeft();
+    initializeLeft(table);
 
     Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -485,7 +486,7 @@ public class Main extends Application {
    * 
    * @param root main BorderPane layout
    */
-  private void initializeLeft() {
+  private void initializeLeft(TableView table) {
 
     TreeItem<Path> treeItem = new TreeItem<Path>(Paths.get(System.getProperty("user.dir")));
     treeItem.setExpanded(false);
@@ -527,26 +528,50 @@ public class Main extends Application {
     Label fontSetting = new Label("Font:");
     ComboBox fontSel = new ComboBox();
     fontSel.getItems().add("Arial");// TODO: add font selections
+    fontSel.getItems().add("Times New Roman");
+    fontSel.getItems().add("Courier New");
+    fontSel.getItems().add("Tahoma");
     fontSel.setValue("Arial");
 
     Label fontSize = new Label("Size: ");
     ComboBox fontSizer = new ComboBox();
-    fontSizer.getItems().add("15");// TODO: add size settings
-    fontSizer.setValue("15");
+    fontSizer.getItems().add("10");// TODO: add size settings
+    fontSizer.getItems().add("15");
+    fontSizer.getItems().add("18");
+    fontSizer.setValue("10");
 
     Label line = new Label("Line Width:");
     ComboBox lineWidth = new ComboBox();
     lineWidth.getItems().add("1px");// TODO: add line width settings
+    lineWidth.getItems().add("2px");
+    lineWidth.getItems().add("4px");
     lineWidth.setValue("1px");
-
+    
+    // change font functionality
+    fontSel.setOnAction(e -> {
+	changeFont(fontSel, fontSizer,table);
+    });
+    
+    // change font size functionality
+    fontSizer.setOnAction(e -> {
+	changeFont(fontSel, fontSizer, table);
+    });
+    
+    // change line width functionality
+    lineWidth.setOnAction(e -> {
+	//TODO: Figure out how to change border width of a JavaFX tableview
+    });
+    
     leftBot.getChildren().addAll(style, fontSetting, fontSel, fontSize, fontSizer, line, lineWidth);
-
 
     left.setTop(splitView);
     left.setCenter(leftBot);
     root.setLeft(left);
   }
-
+  
+  private void changeFont(ComboBox fontSel, ComboBox fontSizer, TableView table) {
+      table.setStyle("-fx-font: " + fontSizer.getValue() + "px \"" + fontSel.getValue() + "\";\n");
+  }
 
   /**
    * Recursively create the tree
@@ -715,5 +740,4 @@ public class Main extends Application {
   public static void main(String[] args) {
     launch(args);
   }
-
 }
