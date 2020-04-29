@@ -94,8 +94,8 @@ public class Main extends Application {
     
     //Creates the new Table
     TableView table = createTable();
-    table.setStyle("-fx-font: 12px Arial;\n");
-
+    table.setStyle("-fx-font: 15px Arial;\n");   
+    
     //Top menubars
     initializeTop(primaryStage);
 
@@ -148,6 +148,11 @@ public class Main extends Application {
 
     TextField searchText = new TextField();
     searchText.setPromptText("Search this document...");
+    
+    // set search functionality
+    searchText.setOnAction(e -> {
+	search(searchChoice, searchText);
+    });
 
     HBox searchBar = new HBox(searchChoice, searchText);
     mainTop.setSpacing(5);
@@ -240,6 +245,10 @@ public class Main extends Application {
     main.setCenter(table);
     // put the table and the topbars to main
     root.setCenter(main);
+  }
+  
+  private void search(ChoiceBox<String> a, TextField b) {
+      
   }
 
   /**
@@ -535,10 +544,10 @@ public class Main extends Application {
 
     Label fontSize = new Label("Size: ");
     ComboBox fontSizer = new ComboBox();
-    fontSizer.getItems().add("10");// TODO: add size settings
+    fontSizer.getItems().add("12");// TODO: add size settings
     fontSizer.getItems().add("15");
     fontSizer.getItems().add("18");
-    fontSizer.setValue("10");
+    fontSizer.setValue("15");
 
     Label line = new Label("Line Width:");
     ComboBox lineWidth = new ComboBox();
@@ -549,12 +558,12 @@ public class Main extends Application {
     
     // change font functionality
     fontSel.setOnAction(e -> {
-	changeFont(fontSel, fontSizer,table);
+	changeFont(fontSel, fontSizer);
     });
     
     // change font size functionality
     fontSizer.setOnAction(e -> {
-	changeFont(fontSel, fontSizer, table);
+	changeFont(fontSel, fontSizer);
     });
     
     // change line width functionality
@@ -569,8 +578,16 @@ public class Main extends Application {
     root.setLeft(left);
   }
   
-  private void changeFont(ComboBox fontSel, ComboBox fontSizer, TableView table) {
-      table.setStyle("-fx-font: " + fontSizer.getValue() + "px \"" + fontSel.getValue() + "\";\n");
+  /**
+   * Changes the font of the tables when the user changes it
+   * 
+   * @param fontSel the ComboBox containing the font to change to
+   * @param fontSizer the ComboBox containing the font size in pixels to change to
+   */
+  private void changeFont(ComboBox fontSel, ComboBox fontSizer) {
+      for (TableView table : tables) {
+	  table.setStyle("-fx-font: " + fontSizer.getValue() + "px \"" + fontSel.getValue() + "\";\n");
+      }
   }
 
   /**
