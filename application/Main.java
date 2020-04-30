@@ -36,6 +36,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.*;
@@ -65,7 +66,7 @@ public class Main extends Application {
 
   private static final int WINDOW_WIDTH = 800;
   private static final int WINDOW_HEIGHT = 600;
-  private static final String APP_TITLE = "BooKeeper v0.5";
+  private static final String APP_TITLE = "BooKeeper v0.6";
   private static Font font = new Font("Arial", 15);
   private static int transactionNumber = 1;
   // stores the tables for display
@@ -127,11 +128,13 @@ public class Main extends Application {
   private void initializeMain(Stage stage) {
 
     BorderPane main = createMain();
+    main.setPadding(new Insets(5,5,5,5));
     HBox mainTop = new HBox();
 
 
     // create save button
     Button save = new Button("Save");
+    save.setAlignment(Pos.TOP_RIGHT);
     save.setOnMouseClicked(e -> {
       // let user choose a location
       FileChooser fileChooser = new FileChooser();
@@ -167,9 +170,16 @@ public class Main extends Application {
       
     });
     
+    Pane tabs = new Pane(this.tabs, save);
     
-    HBox tabs = new HBox(this.tabs, save);
-    tabs.setSpacing(20);
+    save.setLayoutX(500);
+    save.setLayoutY(tabs.getLayoutY());
+    
+    this.tabs.setLayoutX(0);
+    this.tabs.setLayoutY(tabs.getLayoutY());
+    
+    
+    
 
 
 
