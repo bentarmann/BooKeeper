@@ -34,7 +34,7 @@ import java.util.List;
  * @version 1.0
  * 
  */
-public class Account {
+public class Account implements Comparable<Account> {
 
   private String accountName;
   private int amount;
@@ -140,6 +140,20 @@ public class Account {
    */
   public boolean removeIdentifier(int statement) {
     return this.identifierList.removeIf(tuple -> (tuple[0]==statement));
+  }
+
+  /**
+   * Compares to other accounts based on name, if same name based on amount
+   * @param o the other account
+   * @return -1 if less, 0 if equal, 1 if greater
+   */
+  @Override
+  public int compareTo(Account o) {
+    if (!this.getAccountName().equals(o.getAccountName()))
+      return this.getAccountName().compareTo(o.getAccountName());
+    else
+      return (this.getAmount() < o.getAmount() ? -1 : 
+        (this.getAmount() == o.getAmount() ? 0 : 1));
   }
   
 }

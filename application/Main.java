@@ -425,6 +425,9 @@ public class Main extends Application {
 
 
     FileChooser fileChooser = new FileChooser();
+    FileChooser.ExtensionFilter csvFilter = new FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv");
+    fileChooser.getExtensionFilters().add(csvFilter);
+    fileChooser.setTitle("Open...");
     // import
     MenuItem importFile = new MenuItem("Import");
     file.getItems().add(importFile);
@@ -454,6 +457,12 @@ public class Main extends Application {
     MenuItem exportFile = new MenuItem("Export");
     file.getItems().add(exportFile);
 
+    exportFile.setOnAction(e -> {
+      //bks.get(currentBooKeeper)
+      //TODO
+      Financials.generateFinancials(new BooKeeper(), primaryStage);
+    });
+    
     // TODO:add a pointer to the current table in display
 
     Menu edit = new Menu("Edit");
@@ -892,7 +901,7 @@ public class Main extends Application {
       Alert success = new Alert(AlertType.CONFIRMATION, "Import Success!");
       success.showAndWait();
     } catch (Exception e) {
-      e.printStackTrace();
+      //e.printStackTrace();
       String importError = "Something wrong happen while reading the file!";
       Alert importAlert = new Alert(AlertType.ERROR, importError);
       importAlert.showAndWait();

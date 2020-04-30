@@ -7,5 +7,8 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX11"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Apache POI"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Apache POI-libs"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Ooxml-lib"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
