@@ -72,7 +72,7 @@ public class Main extends Application {
   private static final int WINDOW_WIDTH = 800;
   private static final int WINDOW_HEIGHT = 600;
   private static final String APP_TITLE = "BooKeeper v0.2";
-  private static Font font = new Font("Arial", 15);// TODO:add settings to change the font
+  private static Font font = new Font("Arial", 15);
   private static int transactionNumber = 1;
   //stores the tables for display
   private static ArrayList<TableView> tables = new ArrayList<>();
@@ -436,8 +436,10 @@ public class Main extends Application {
       //set current table to the latest one
       currentTable = tables.size() - 1;
       
-      tabs.getTabs().add(new Tab("Journal Entry" + currentTab));
+      Tab newTab = new Tab("Journal Entry" + currentTab);
+      tabs.getTabs().add(newTab);
       currentTab++;
+      newTab.setOnClosed(close -> closeTab(newTab));
       
       updateTable();
       //updates the transaction number as the most recent version
@@ -604,7 +606,7 @@ public class Main extends Application {
 
       }
     }));
-
+    
     // create components
     BorderPane left = new BorderPane();
     TreeView<Path> treeView = new TreeView<Path>(treeItem);
@@ -629,8 +631,11 @@ public class Main extends Application {
                 //set current table to the latest one
                 currentTable = tables.size() - 1;
                 
-                tabs.getTabs().add(new Tab("Journal Entry" + currentTab));
+                Tab newTab = new Tab("Journal Entry" + currentTab);
+                tabs.getTabs().add(newTab);
                 currentTab++;
+                
+                newTab.setOnClosed(close -> closeTab(newTab));
                 
                 updateTable();
                 //updates the transaction number as the most recent version
@@ -701,6 +706,23 @@ public class Main extends Application {
       for (TableView table : tables) {
 	  table.setStyle("-fx-font: " + fontSizer.getValue() + "px \"" + fontSel.getValue() + "\";\n");
       }
+  }
+  
+  /**
+   * Functionality for closing a tab
+   * 
+   * @param tab the tab to close
+   */
+  private void closeTab(Tab tab) {
+      System.out.println("DEMO");
+      tabs.getTabs().remove(tab);
+      currentTab--;
+      
+      tables.remove(currentTable);
+      currentTable = tables.size() - 1;
+      updateTable();
+      
+      transactionNumber = getRecent().getLatestTransactionID();
   }
 
   /**
