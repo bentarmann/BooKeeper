@@ -45,6 +45,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.*;
@@ -86,6 +87,9 @@ public class Main extends Application {
   //the main layoput
   private static BorderPane root = new BorderPane();
   private static ArrayList<BorderPane> mains = new ArrayList<>();
+  
+  private static ArrayList<BooKeeper> bks = new ArrayList<>();
+  private static int currentBooKeeper = 0;
   
   /**
    * Starting GUI of the application
@@ -420,13 +424,13 @@ public class Main extends Application {
     // import
     MenuItem importFile = new MenuItem("Import");
     file.getItems().add(importFile);
-    BooKeeper bk = new BooKeeper();
+    
     // add import function
     importFile.setOnAction(e -> {
 
       File fileToImport = fileChooser.showOpenDialog(primaryStage);
       if (fileToImport != null) {
-        data.add(importFile(fileToImport,bk));
+        data.add(importFile(fileToImport,createBK()));
       }
       TableView table = createTable();
       //set current table to the latest one
@@ -604,6 +608,37 @@ public class Main extends Application {
     // create components
     BorderPane left = new BorderPane();
     TreeView<Path> treeView = new TreeView<Path>(treeItem);
+    
+    treeView.setOnMouseClicked(new EventHandler<MouseEvent>()
+    {
+        /** 
+         * set the event on double clicking
+         */
+        @Override
+        public void handle(MouseEvent mouseEvent)
+        {            
+            if(mouseEvent.getClickCount() == 2)
+            {
+              
+                TreeItem<Path> fileSelection = treeView.getSelectionModel().getSelectedItem();
+                
+                data.add(importFile(fileSelection.getValue().toFile(),createBK()));
+            
+                TableView table = createTable();
+                
+                //set current table to the latest one
+                currentTable = tables.size() - 1;
+                
+                tabs.getTabs().add(new Tab("Journal Entry" + currentTab));
+                currentTab++;
+                
+                updateTable();
+                //updates the transaction number as the most recent version
+                transactionNumber = getRecent().getLatestTransactionID();
+            }
+        }
+    });
+    
     SplitPane splitView = new SplitPane();
     splitView.getItems().add(treeView);
 
@@ -682,7 +717,6 @@ public class Main extends Application {
 
         TreeItem<Path> newItem = new TreeItem<Path>(path);
         newItem.setExpanded(true);
-
         rootItem.getChildren().add(newItem);
 
         if (Files.isDirectory(path)) {
@@ -799,6 +833,16 @@ public class Main extends Application {
     BorderPane mainPane = new BorderPane();
     mains.add(mainPane);
     return mainPane;
+  }
+  
+  /**
+   * Return a new BooKeeper class to keep track of the accounts
+   * @return
+   */
+  private static BooKeeper createBK() {
+    BooKeeper bk = new BooKeeper();
+    bks.add(bk);
+    return bk;
   }
   
 /**
