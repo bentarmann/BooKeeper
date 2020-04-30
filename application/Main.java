@@ -638,7 +638,7 @@ public class Main extends Application {
 	  }
       }
       catch (IOException exception) {
-	  
+	  message = "Error: help.txt could not be found.";
       }
 	
       Alert helpAlert = new Alert(AlertType.INFORMATION, message);
