@@ -537,7 +537,35 @@ public class Main extends Application {
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     edit.getItems().add(deleteEdit);
 
+    // find menu
     Menu find = new Menu("Find");
+    MenuItem findWindow = new MenuItem("Search");
+    find.getItems().add(findWindow);
+    
+    findWindow.setOnAction(e -> {
+	ChoiceBox<String> searchChoice = new ChoiceBox<String>();
+	searchChoice.getItems().add("Transaction Number");
+	searchChoice.getItems().add("Date");
+	searchChoice.getItems().add("Account Name");
+	searchChoice.getItems().add("Amount");
+	searchChoice.setValue("Transaction Number");
+	TextField searchText = new TextField();
+	HBox findHBox = new HBox();
+	findHBox.getChildren().add(searchChoice);
+	findHBox.getChildren().add(searchText);
+	Scene findScene = new Scene(findHBox, 300, 100);
+	
+	// set search functionality
+	search(searchChoice, searchText);
+	
+	// prepare and show scene
+	final Stage dialog = new Stage();
+	dialog.initModality(Modality.APPLICATION_MODAL);
+	dialog.initOwner(primaryStage);
+	dialog.setScene(findScene);
+	dialog.setTitle("Find");
+	dialog.show();
+    });
 
     // window menu
     Menu window = new Menu("Window");
@@ -598,11 +626,23 @@ public class Main extends Application {
 
     // help menu
     Menu help = new Menu("Help");
-    help.setOnAction(e -> {
-      // TODO: Add message or functionality to get help. Perhaps create a text file containing
-      // a description of the functionality of the program that can be displayed when
-      // this menu button is pressed
-      Alert helpAlert = new Alert(AlertType.INFORMATION, "");
+    MenuItem howToUse = new MenuItem("How to Use");
+    help.getItems().add(howToUse);
+    
+    howToUse.setOnAction(e -> {
+      String message = "";
+      try {
+	  Scanner helpFile = new Scanner(new File("help.txt"));
+	  while (helpFile.hasNextLine()) {
+	      message += helpFile.nextLine() + "\n";
+	  }
+      }
+      catch (IOException exception) {
+	  
+      }
+	
+      Alert helpAlert = new Alert(AlertType.INFORMATION, message);
+      helpAlert.showAndWait();
     });
 
     // about menu
