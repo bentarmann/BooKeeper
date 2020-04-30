@@ -1,4 +1,4 @@
-//////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
+/////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
 //
 // Title: Main.java
 // Files: (a list of all source files used by that program)
@@ -38,6 +38,9 @@ import java.util.Scanner;
 import java.util.function.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -149,11 +152,6 @@ public class Main extends Application {
     TextField searchText = new TextField();
     searchText.setPromptText("Search this document...");
     
-    // set search functionality
-    searchText.setOnAction(e -> {
-	search(searchChoice, searchText);
-    });
-
     HBox searchBar = new HBox(searchChoice, searchText);
     mainTop.setSpacing(5);
     mainTop.getChildren().add(searchBar);
@@ -241,14 +239,94 @@ public class Main extends Application {
       }
     });
 
-
+    // set search functionality
+    search(searchChoice, searchText);
+    
     main.setCenter(table);
     // put the table and the topbars to main
     root.setCenter(main);
   }
   
-  private void search(ChoiceBox<String> a, TextField b) {
+  /**
+   * This method implements the search functionality of the application. A search can be performed
+   * on a transaction based on the transaction number, transaction date, account name involved in
+   * transaction, or amount in account involved in transaction.
+   * 
+   * Search is performed by creating a filteredList containing all table elements that match the
+   * search. The filteredList then becomes the elements of the table in order to filter for the
+   * search.
+   * 
+   * When the search box is empty, the application shows all entries in the document
+   * 
+   * @param searchChoice ChoiceBox containing what the user would like to search for
+   * @param searchText TextField containing the String to query for
+   */
+  @SuppressWarnings("unchecked")
+  private void search(ChoiceBox<String> searchChoice, TextField searchText) {
+      TableView table = tables.get(this.currentTable);
+      ObservableList<TableColumn> columns = table.getColumns();
+      FilteredList filteredData = new FilteredList<>(table.getItems(), p -> true);
       
+      searchText.textProperty().addListener((observable, oldValue, newValue) -> {
+	  // lambda expression filters the data of the table into a filtered list
+	  filteredData.setPredicate(transaction -> {
+	      // shows all data if search box is empty
+	      if (newValue == null || newValue.isEmpty()) {
+		  return true;
+	      }
+	     
+	      Transaction t = (Transaction) transaction;
+	      
+	      // sort based on indicated search type
+	      switch (searchChoice.getValue()) {
+	      	case "Transaction Number":
+	      	    String transactionNumber = "" + t.getTransactionNumber();
+	      	    if (transactionNumber.contains(searchText.getText())) {
+	      		return true;
+	      	    }
+	      	    break;
+	      	case "Date":
+	      	    if (t.getDateString().contains(searchText.getText())) {
+	      		return true;
+	      	    }
+	      	    break;
+	      	case "Account Name":
+	      	    for (Account debitAccount : t.getDebitAccounts()) {
+	      		if (debitAccount.getAccountName().contains(searchText.getText())) {
+	      		    return true;
+	      		}
+	      	    }
+	      	    for (Account creditAccount : t.getCreditAccounts()) {
+	      		if (creditAccount.getAccountName().contains(searchText.getText())) {
+	      		    return true;
+	      		}
+	      	    }
+	      	    break;
+	      	case "Amount":
+	      	    for (Account debitAccount : t.getDebitAccounts()) {
+	      		String amount = "" + debitAccount.getAmount();
+	      		if (amount.contains(searchText.getText())) {
+	      		    return true;
+	      		}
+	      	    }
+	      	    for (Account creditAccount : t.getCreditAccounts()) {
+	      		String amount = "" + creditAccount.getAmount();
+	      		if (amount.contains(searchText.getText())) {
+	      		    return true;
+	      		}
+	      	    }
+	      	    break;
+	      }
+	      
+	      return false;
+	  });
+      });
+     
+      SortedList sortedData = new SortedList<>(filteredData);
+      sortedData.comparatorProperty().bind(table.comparatorProperty());
+      table.setItems(sortedData);
+      
+      table.setItems(filteredData);
   }
 
   /**
