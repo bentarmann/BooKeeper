@@ -44,6 +44,7 @@ public class Transaction {
   private ArrayList<Integer> debitAmounts;
   private ArrayList<Account> creditAccounts;
   private ArrayList<Integer> creditAmounts;
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
   
   public Transaction(LocalDateTime date, int transactionNumber) {
     this.date = date;
@@ -63,7 +64,7 @@ public class Transaction {
    * @param date with the format "MM-dd-yyyy HH:mm"
    */
   public Transaction(String date, int transactionNumber) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+    
     this.date = LocalDateTime.parse(date, formatter);
     debitAccounts = new ArrayList<>();
     debitAmounts = new ArrayList<>();
@@ -98,7 +99,6 @@ public class Transaction {
    * @return MM-dd-yyyy HH:mm in String
    */
   public String getDateString() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
     return date.format(formatter);
   }
   
@@ -115,7 +115,6 @@ public class Transaction {
    * @param date a string with format "MM-dd-yyyy HH:mm"
    */
   public void setDate(String date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
     this.date = LocalDateTime.parse(date, formatter);
   }
   
@@ -273,5 +272,23 @@ public class Transaction {
     int creditAmt = getCurrentAmount("CREDIT");
     
     return debitAmt==creditAmt;
+  }
+  
+  /**
+   * Returns a string in the format:
+   * transaction id, date, debit accounts, debit amounts, credit accounts, credit amounts
+   */
+  @Override
+  public String toString() {
+    String transaction = "";
+    transaction += (Integer.toString(transactionNumber) + ",");
+    transaction += (date.format(formatter)+",");
+    transaction += (debitAccounts.toString()+",");
+    transaction += (debitAmounts.toString()+",");
+    transaction += (creditAccounts.toString()+",");
+    transaction += (creditAmounts.toString());
+    
+    return transaction;
+    
   }
 }

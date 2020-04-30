@@ -23,7 +23,9 @@
 package application;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -102,7 +104,7 @@ public class Main extends Application {
     initializeTop(primaryStage);
 
     // initalize the main window
-    initializeMain();
+    initializeMain(primaryStage);
 
     // the left file view and settings
     initializeLeft();
@@ -122,7 +124,7 @@ public class Main extends Application {
    * 
    * @param root
    */
-  private void initializeMain() {
+  private void initializeMain(Stage stage) {
 
     BorderPane main = createMain();
     HBox mainTop = new HBox();
@@ -130,7 +132,42 @@ public class Main extends Application {
 
     // create save button
     Button save = new Button("Save");
-
+    save.setOnMouseClicked(e -> {
+      // let user choose a location
+      FileChooser fileChooser = new FileChooser();
+      FileChooser.ExtensionFilter csvFilter =
+          new FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv");
+      fileChooser.getExtensionFilters().add(csvFilter);
+      fileChooser.setTitle("Save Journal Entries");
+      File file = fileChooser.showSaveDialog(stage);
+      
+   // save to csv
+      if (file != null) {
+        try (PrintWriter pw = new PrintWriter(file)) {
+          StringBuilder sb = new StringBuilder();
+          //get the transactions from the current bookings
+          Collection<Transaction> curr = data.get(currentTab).values();
+          //add each transactions
+          curr.forEach(t -> {
+            sb.append(t.toString());
+            sb.append("\n");
+          });
+          
+          //write the transactions to file
+          pw.write(sb.toString());
+          
+          Alert success = new Alert(AlertType.CONFIRMATION, "Saving Success!");
+          success.showAndWait();
+        } catch (Exception ex) {
+          String exportError = "Something wrong happen while saving the file!";
+          Alert exportAlert = new Alert(AlertType.ERROR, exportError);
+          exportAlert.showAndWait();
+        }
+      }
+      
+    });
+    
+    
     HBox tabs = new HBox(this.tabs, save);
     tabs.setSpacing(20);
 
@@ -915,7 +952,7 @@ public class Main extends Application {
       Alert success = new Alert(AlertType.CONFIRMATION, "Import Success!");
       success.showAndWait();
     } catch (Exception e) {
-      //e.printStackTrace();
+      e.printStackTrace();
       String importError = "Something wrong happen while reading the file!";
       Alert importAlert = new Alert(AlertType.ERROR, importError);
       importAlert.showAndWait();
@@ -942,7 +979,7 @@ public class Main extends Application {
     if (isNumber) {
       ArrayList<Integer> numbers = new ArrayList<>();
       for (String item : result) {
-        numbers.add(Integer.parseInt(item));
+        numbers.add(Integer.parseInt(item.strip()));
       }
       return numbers;
     } else {

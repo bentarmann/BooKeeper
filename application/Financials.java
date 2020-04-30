@@ -46,10 +46,14 @@ import javafx.stage.Stage;
  */
 public class Financials {
 
+  
+  
   /**
    * Create Financials based on the current BooKeeper Accounts
    * 
-   * @param bk
+   * @param workBook the workbook to add worksheet
+   * @param bk bookeeper for list of accounts
+   * @param name company name
    */
   public static void generateFinancials(BooKeeper bk, Stage stage) {
     // create a new excel workbook
@@ -65,7 +69,7 @@ public class Financials {
     File file = fileChooser.showSaveDialog(stage);
 
     // generate the files, use the file name as company name
-    generateBalanceSheet(workBook, bk, file.getName().replace(".xlsx", ""));
+    generateBS(workBook, bk, file.getName().replace(".xlsx", ""));
 
     // export to xlsx
     if (file != null) {
@@ -89,15 +93,21 @@ public class Financials {
    * @param bk
    * @return
    */
-  private static void generateBalanceSheet(XSSFWorkbook workBook, BooKeeper bk, String name) {
+  private static void generateBS(XSSFWorkbook workBook, BooKeeper bk, String name) {
 
     // Create a sheet
     XSSFSheet balSheet = workBook.createSheet("Balance Sheet");
     // Create title
     int rowNumber = 0;
     Row title = balSheet.createRow(rowNumber++);
-    title.createCell(0).setCellValue(name.toUpperCase() + "\nCONSOLIDATED BALANCE SHEET"
+    
+    CellStyle header = workBook.createCellStyle();  
+    header.setWrapText(true);
+    Cell titleCell = title.createCell(0);
+    titleCell.setCellValue(name.toUpperCase() + "\nCONSOLIDATED BALANCE SHEET"
         + "\n(in thousands, except per share data) ");
+    titleCell.setCellStyle(header);
+    
     // Create Headers
     Row dateRow = balSheet.createRow(rowNumber++);
     // Assets
@@ -128,6 +138,36 @@ public class Financials {
 
   }
 
+  /**
+   * Create an income statement on a worksheet
+   * @param workBook the workbook to add worksheet
+   * @param bk bookeeper for list of accounts
+   * @param name company name
+   */
+  private static void generateIS(XSSFWorkbook workBook, BooKeeper bk, String name) {
+    // Create a sheet
+    XSSFSheet incSheet = workBook.createSheet("Income Statement");
+    // Create title
+    int rowNumber = 0;
+    Row title = incSheet.createRow(rowNumber++);
+    CellStyle header = workBook.createCellStyle();  
+    header.setWrapText(true);
+    Cell titleCell = title.createCell(0);
+    titleCell.setCellValue(name.toUpperCase() + "\nINCOME STATEMENT"
+        + "\n(in thousands, except per share data) ");
+    titleCell.setCellStyle(header);
+    
+    // Create Headers
+    Row dateRow = incSheet.createRow(rowNumber++);
+    // Assets
+    dateRow.createCell(0).setCellValue("Assets");
+    dateRow.createCell(1).setCellValue("YE 2020");
+    
+    
+    
+  }
+  
+  
   /**
    * create sections of accounts on a sheet
    * 

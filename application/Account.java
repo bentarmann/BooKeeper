@@ -180,4 +180,12 @@ public class Account implements Comparable<Account> {
     else
       this.amount -= amount;
   }
+  
+  /**
+   * Returns the account name of this account
+   */
+  @Override
+  public String toString() {
+    return this.accountName;
+  }
 }
