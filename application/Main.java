@@ -461,17 +461,12 @@ public class Main extends Application {
     edit.getItems().add(insertEdit);
     insertEdit.setOnAction(e -> {
       Transaction t1 = new Transaction(transactionNumber++);
-      // Account cash = new Account("Cash");
-      // t1.addDebitTransaction(cash, 99);
-      // Account inventory = new Account("Inventory");
-      // t1.addCreditTransaction(inventory, 99);
       data.get(currentTab).put(Integer.toString(t1.getTransactionNumber()), t1);
       TableView curTable = tables.get(currentTable);
       curTable.getItems().add(t1);
     });
 
     MenuItem insertAccount = new MenuItem("Add Account");
-    edit.getItems().add(insertAccount);
     insertAccount.setOnAction(e -> {
       // setup new scene
       VBox insertVBox = new VBox();
@@ -493,6 +488,8 @@ public class Main extends Application {
 
       Label amountLabel = new Label("Amount:   ");
       TextField amountTextField = new TextField("" + primaryStage.getWidth());
+      
+      Button button = new Button("Add Account");
 
       accountHBox.getChildren().add(accountLabel);
       accountHBox.getChildren().add(accountComboBox);
@@ -500,28 +497,30 @@ public class Main extends Application {
       amountHBox.getChildren().add(amountLabel);
       amountHBox.getChildren().add(amountTextField);
       insertVBox.getChildren().add(amountHBox);
-      // Transaction t =
+      insertVBox.getChildren().add(button);
 
       // set action for entering width and height
-      accountComboBox.setOnAction(action -> {
+      button.setOnAction(action -> {
         String input = accountComboBox.toString();
-        Account added;
+        Account added = new Account("temp");
         for (Account i : tempList) {
           if (input.equals(i.getAccountName())) {
             added = i;
             break;
           }
         }
-      });
-
-      amountTextField.setOnAction(action -> {
-        String input = amountTextField.getCharacters().toString();
+        int amount = 0;
+        String input2 = amountTextField.getCharacters().toString();
         try {
-          double height = Double.parseDouble(input);
-          primaryStage.setHeight(height);
+          amount = Integer.parseInt(input2);
         } catch (NumberFormatException exception) {
           Alert windowAlert = new Alert(AlertType.ERROR, "Please enter a valid number");
           windowAlert.showAndWait();
+        }
+        if(added.getIdentifiers().get(0)[0] == 1) {
+          selected.addDebitTransaction(added, amount);
+        } else {
+          selected.addCreditTransaction(added, amount);
         }
       });
 
@@ -533,7 +532,8 @@ public class Main extends Application {
       dialog.setTitle("Add Account");
       dialog.show();
     });
-
+    edit.getItems().add(insertAccount);
+    
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     edit.getItems().add(deleteEdit);
 
