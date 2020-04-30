@@ -74,36 +74,38 @@ public class Main extends Application {
   private static final String APP_TITLE = "BooKeeper v0.2";
   private static Font font = new Font("Arial", 15);
   private static int transactionNumber = 1;
-  //stores the tables for display
+  // stores the tables for display
   private static ArrayList<TableView> tables = new ArrayList<>();
-  //tracks the current table's index in the tables field
+  // tracks the current table's index in the tables field
   private static int currentTable = 0;
-  
+
   private static int currentTab = 0;
   private static TabPane tabs = new TabPane();
   // stores the data imported, each tab uses a Bookings class
   private static ArrayList<Bookings> data = new ArrayList<>();
 
-  //the main layoput
+  // the main layoput
   private static BorderPane root = new BorderPane();
   private static ArrayList<BorderPane> mains = new ArrayList<>();
-  
+
   private static ArrayList<BooKeeper> bks = new ArrayList<>();
   private static int currentBooKeeper = 0;
-  
+
+  private static Transaction selected;
+
   /**
    * Starting GUI of the application
    */
   @Override
   public void start(Stage primaryStage) throws Exception {
     // save args example
-    args = this.getParameters().getRaw(); 
-    
-    //Creates the new Table
+    args = this.getParameters().getRaw();
+
+    // Creates the new Table
     TableView table = createTable();
-    table.setStyle("-fx-font: 15px Arial;\n");   
-    
-    //Top menubars
+    table.setStyle("-fx-font: 15px Arial;\n");
+
+    // Top menubars
     initializeTop(primaryStage);
 
     // initalize the main window
@@ -128,7 +130,7 @@ public class Main extends Application {
    * @param root
    */
   private void initializeMain() {
-    
+
     BorderPane main = createMain();
     HBox mainTop = new HBox();
 
@@ -155,7 +157,7 @@ public class Main extends Application {
 
     TextField searchText = new TextField();
     searchText.setPromptText("Search this document...");
-    
+
     HBox searchBar = new HBox(searchChoice, searchText);
     mainTop.setSpacing(5);
     mainTop.getChildren().add(searchBar);
@@ -166,7 +168,7 @@ public class Main extends Application {
 
     TableView table = tables.get(currentTable);
 
-    
+
     table.setEditable(true);
 
     // transaction number column
@@ -193,6 +195,7 @@ public class Main extends Application {
     t1.setDate("04-20-2020 14:20");
     Account cash = new Account("Cash");
     t1.addDebitTransaction(cash, 99);
+    t1.addDebitTransaction(cash, 99);
     Account inventory = new Account("Inventory");
     t1.addCreditTransaction(inventory, 99);
     table.getItems().add(t1);
@@ -211,6 +214,7 @@ public class Main extends Application {
         this.selectedProperty().addListener((i, wasSelected, isSelected) -> {
           if (isSelected) {
             transactionDetails = constructSubTable(getItem());
+            selected = getItem();
             this.getChildren().add(transactionDetails);
           } else {
             this.getChildren().remove(transactionDetails);
@@ -245,12 +249,12 @@ public class Main extends Application {
 
     // set search functionality
     search(searchChoice, searchText);
-    
+
     main.setCenter(table);
     // put the table and the topbars to main
     root.setCenter(main);
   }
-  
+
   /**
    * This method implements the search functionality of the application. A search can be performed
    * on a transaction based on the transaction number, transaction date, account name involved in
@@ -263,74 +267,74 @@ public class Main extends Application {
    * When the search box is empty, the application shows all entries in the document
    * 
    * @param searchChoice ChoiceBox containing what the user would like to search for
-   * @param searchText TextField containing the String to query for
+   * @param searchText   TextField containing the String to query for
    */
   @SuppressWarnings("unchecked")
   private void search(ChoiceBox<String> searchChoice, TextField searchText) {
-      TableView table = tables.get(this.currentTable);
-      ObservableList<TableColumn> columns = table.getColumns();
-      FilteredList filteredData = new FilteredList<>(table.getItems(), p -> true);
-      
-      searchText.textProperty().addListener((observable, oldValue, newValue) -> {
-	  // lambda expression filters the data of the table into a filtered list
-	  filteredData.setPredicate(transaction -> {
-	      // shows all data if search box is empty
-	      if (newValue == null || newValue.isEmpty()) {
-		  return true;
-	      }
-	     
-	      Transaction t = (Transaction) transaction;
-	      
-	      // sort based on indicated search type
-	      switch (searchChoice.getValue()) {
-	      	case "Transaction Number":
-	      	    String transactionNumber = "" + t.getTransactionNumber();
-	      	    if (transactionNumber.contains(searchText.getText())) {
-	      		return true;
-	      	    }
-	      	    break;
-	      	case "Date":
-	      	    if (t.getDateString().contains(searchText.getText())) {
-	      		return true;
-	      	    }
-	      	    break;
-	      	case "Account Name":
-	      	    for (Account debitAccount : t.getDebitAccounts()) {
-	      		if (debitAccount.getAccountName().contains(searchText.getText())) {
-	      		    return true;
-	      		}
-	      	    }
-	      	    for (Account creditAccount : t.getCreditAccounts()) {
-	      		if (creditAccount.getAccountName().contains(searchText.getText())) {
-	      		    return true;
-	      		}
-	      	    }
-	      	    break;
-	      	case "Amount":
-	      	    for (Account debitAccount : t.getDebitAccounts()) {
-	      		String amount = "" + debitAccount.getAmount();
-	      		if (amount.contains(searchText.getText())) {
-	      		    return true;
-	      		}
-	      	    }
-	      	    for (Account creditAccount : t.getCreditAccounts()) {
-	      		String amount = "" + creditAccount.getAmount();
-	      		if (amount.contains(searchText.getText())) {
-	      		    return true;
-	      		}
-	      	    }
-	      	    break;
-	      }
-	      
-	      return false;
-	  });
+    TableView table = tables.get(this.currentTable);
+    ObservableList<TableColumn> columns = table.getColumns();
+    FilteredList filteredData = new FilteredList<>(table.getItems(), p -> true);
+
+    searchText.textProperty().addListener((observable, oldValue, newValue) -> {
+      // lambda expression filters the data of the table into a filtered list
+      filteredData.setPredicate(transaction -> {
+        // shows all data if search box is empty
+        if (newValue == null || newValue.isEmpty()) {
+          return true;
+        }
+
+        Transaction t = (Transaction) transaction;
+
+        // sort based on indicated search type
+        switch (searchChoice.getValue()) {
+          case "Transaction Number":
+            String transactionNumber = "" + t.getTransactionNumber();
+            if (transactionNumber.contains(searchText.getText())) {
+              return true;
+            }
+            break;
+          case "Date":
+            if (t.getDateString().contains(searchText.getText())) {
+              return true;
+            }
+            break;
+          case "Account Name":
+            for (Account debitAccount : t.getDebitAccounts()) {
+              if (debitAccount.getAccountName().contains(searchText.getText())) {
+                return true;
+              }
+            }
+            for (Account creditAccount : t.getCreditAccounts()) {
+              if (creditAccount.getAccountName().contains(searchText.getText())) {
+                return true;
+              }
+            }
+            break;
+          case "Amount":
+            for (Account debitAccount : t.getDebitAccounts()) {
+              String amount = "" + debitAccount.getAmount();
+              if (amount.contains(searchText.getText())) {
+                return true;
+              }
+            }
+            for (Account creditAccount : t.getCreditAccounts()) {
+              String amount = "" + creditAccount.getAmount();
+              if (amount.contains(searchText.getText())) {
+                return true;
+              }
+            }
+            break;
+        }
+
+        return false;
       });
-     
-      SortedList sortedData = new SortedList<>(filteredData);
-      sortedData.comparatorProperty().bind(table.comparatorProperty());
-      table.setItems(sortedData);
-      
-      table.setItems(filteredData);
+    });
+
+    SortedList sortedData = new SortedList<>(filteredData);
+    sortedData.comparatorProperty().bind(table.comparatorProperty());
+    table.setItems(sortedData);
+
+    table.setItems(filteredData);
   }
 
   /**
@@ -424,25 +428,25 @@ public class Main extends Application {
     // import
     MenuItem importFile = new MenuItem("Import");
     file.getItems().add(importFile);
-    
+
     // add import function
     importFile.setOnAction(e -> {
 
       File fileToImport = fileChooser.showOpenDialog(primaryStage);
       if (fileToImport != null) {
-        data.add(importFile(fileToImport,createBK()));
+        data.add(importFile(fileToImport, createBK()));
       }
       TableView table = createTable();
-      //set current table to the latest one
+      // set current table to the latest one
       currentTable = tables.size() - 1;
-      
+
       Tab newTab = new Tab("Journal Entry" + currentTab);
       tabs.getTabs().add(newTab);
       currentTab++;
       newTab.setOnClosed(close -> closeTab(newTab));
-      
+
       updateTable();
-      //updates the transaction number as the most recent version
+      // updates the transaction number as the most recent version
       transactionNumber = getRecent().getLatestTransactionID();
     });
 
@@ -450,21 +454,86 @@ public class Main extends Application {
     MenuItem exportFile = new MenuItem("Export");
     file.getItems().add(exportFile);
 
-    //TODO:add a pointer to the current table in display
+    // TODO:add a pointer to the current table in display
 
     Menu edit = new Menu("Edit");
     MenuItem insertEdit = new MenuItem("New Entry");
     edit.getItems().add(insertEdit);
-    
-    insertEdit.setOnAction(e-> {
-        Transaction t1 = new Transaction(transactionNumber);
-        transactionNumber++;
-        TableView curTable = tables.get(currentTable);
-        curTable.getItems().add(t1);
-      }
+    insertEdit.setOnAction(e -> {
+      Transaction t1 = new Transaction(transactionNumber++);
+      // Account cash = new Account("Cash");
+      // t1.addDebitTransaction(cash, 99);
+      // Account inventory = new Account("Inventory");
+      // t1.addCreditTransaction(inventory, 99);
+      data.get(currentTab).put(Integer.toString(t1.getTransactionNumber()), t1);
+      TableView curTable = tables.get(currentTable);
+      curTable.getItems().add(t1);
+    });
 
-    );
-    
+    MenuItem insertAccount = new MenuItem("Add Account");
+    edit.getItems().add(insertAccount);
+    insertAccount.setOnAction(e -> {
+      // setup new scene
+      VBox insertVBox = new VBox();
+      HBox accountHBox = new HBox();
+      HBox amountHBox = new HBox();
+
+      Scene insertScene = new Scene(insertVBox, 480, 640);
+
+      // add elements to scene
+      Label accountLabel = new Label("Account Type: ");
+      BooKeeper temp = bks.get(currentBooKeeper);
+      List<Account> tempList = temp.accounts;
+      List<String> tempListName = new ArrayList<String>();
+      for (Account i : tempList) {
+        tempListName.add(i.getAccountName());
+      }
+      ComboBox<String> accountComboBox =
+          new ComboBox<String>(FXCollections.observableList(tempListName));
+
+      Label amountLabel = new Label("Amount:   ");
+      TextField amountTextField = new TextField("" + primaryStage.getWidth());
+
+      accountHBox.getChildren().add(accountLabel);
+      accountHBox.getChildren().add(accountComboBox);
+      insertVBox.getChildren().add(accountHBox);
+      amountHBox.getChildren().add(amountLabel);
+      amountHBox.getChildren().add(amountTextField);
+      insertVBox.getChildren().add(amountHBox);
+      // Transaction t =
+
+      // set action for entering width and height
+      accountComboBox.setOnAction(action -> {
+        String input = accountComboBox.toString();
+        Account added;
+        for (Account i : tempList) {
+          if (input.equals(i.getAccountName())) {
+            added = i;
+            break;
+          }
+        }
+      });
+
+      amountTextField.setOnAction(action -> {
+        String input = amountTextField.getCharacters().toString();
+        try {
+          double height = Double.parseDouble(input);
+          primaryStage.setHeight(height);
+        } catch (NumberFormatException exception) {
+          Alert windowAlert = new Alert(AlertType.ERROR, "Please enter a valid number");
+          windowAlert.showAndWait();
+        }
+      });
+
+      // prepare and show scene
+      final Stage dialog = new Stage();
+      dialog.initModality(Modality.APPLICATION_MODAL);
+      dialog.initOwner(primaryStage);
+      dialog.setScene(insertScene);
+      dialog.setTitle("Add Account");
+      dialog.show();
+    });
+
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     edit.getItems().add(deleteEdit);
 
@@ -504,7 +573,7 @@ public class Main extends Application {
           windowAlert.showAndWait();
         }
       });
-      
+
       windowHeightTextField.setOnAction(action -> {
         String input = windowHeightTextField.getCharacters().toString();
         try {
@@ -606,44 +675,41 @@ public class Main extends Application {
 
       }
     }));
-    
+
     // create components
     BorderPane left = new BorderPane();
     TreeView<Path> treeView = new TreeView<Path>(treeItem);
-    
-    treeView.setOnMouseClicked(new EventHandler<MouseEvent>()
-    {
-        /** 
-         * set the event on double clicking
-         */
-        @Override
-        public void handle(MouseEvent mouseEvent)
-        {            
-            if(mouseEvent.getClickCount() == 2)
-            {
-              
-                TreeItem<Path> fileSelection = treeView.getSelectionModel().getSelectedItem();
-                
-                data.add(importFile(fileSelection.getValue().toFile(),createBK()));
-            
-                TableView table = createTable();
-                
-                //set current table to the latest one
-                currentTable = tables.size() - 1;
-                
-                Tab newTab = new Tab("Journal Entry" + currentTab);
-                tabs.getTabs().add(newTab);
-                currentTab++;
-                
-                newTab.setOnClosed(close -> closeTab(newTab));
-                
-                updateTable();
-                //updates the transaction number as the most recent version
-                transactionNumber = getRecent().getLatestTransactionID();
-            }
+
+    treeView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+      /**
+       * set the event on double clicking
+       */
+      @Override
+      public void handle(MouseEvent mouseEvent) {
+        if (mouseEvent.getClickCount() == 2) {
+
+          TreeItem<Path> fileSelection = treeView.getSelectionModel().getSelectedItem();
+
+          data.add(importFile(fileSelection.getValue().toFile(), createBK()));
+
+          TableView table = createTable();
+
+          // set current table to the latest one
+          currentTable = tables.size() - 1;
+
+          Tab newTab = new Tab("Journal Entry" + currentTab);
+          tabs.getTabs().add(newTab);
+          currentTab++;
+
+          newTab.setOnClosed(close -> closeTab(newTab));
+
+          updateTable();
+          // updates the transaction number as the most recent version
+          transactionNumber = getRecent().getLatestTransactionID();
         }
+      }
     });
-    
+
     SplitPane splitView = new SplitPane();
     splitView.getItems().add(treeView);
 
@@ -673,56 +739,56 @@ public class Main extends Application {
     lineWidth.getItems().add("2px");
     lineWidth.getItems().add("4px");
     lineWidth.setValue("1px");
-    
+
     // change font functionality
     fontSel.setOnAction(e -> {
-	changeFont(fontSel, fontSizer);
+      changeFont(fontSel, fontSizer);
     });
-    
+
     // change font size functionality
     fontSizer.setOnAction(e -> {
-	changeFont(fontSel, fontSizer);
+      changeFont(fontSel, fontSizer);
     });
-    
+
     // change line width functionality
     lineWidth.setOnAction(e -> {
-	//TODO: Figure out how to change border width of a JavaFX tableview
+      // TODO: Figure out how to change border width of a JavaFX tableview
     });
-    
+
     leftBot.getChildren().addAll(style, fontSetting, fontSel, fontSize, fontSizer, line, lineWidth);
 
     left.setTop(splitView);
     left.setCenter(leftBot);
     root.setLeft(left);
   }
-  
+
   /**
    * Changes the font of the tables when the user changes it
    * 
-   * @param fontSel the ComboBox containing the font to change to
+   * @param fontSel   the ComboBox containing the font to change to
    * @param fontSizer the ComboBox containing the font size in pixels to change to
    */
   private void changeFont(ComboBox fontSel, ComboBox fontSizer) {
-      for (TableView table : tables) {
-	  table.setStyle("-fx-font: " + fontSizer.getValue() + "px \"" + fontSel.getValue() + "\";\n");
-      }
+    for (TableView table : tables) {
+      table.setStyle("-fx-font: " + fontSizer.getValue() + "px \"" + fontSel.getValue() + "\";\n");
+    }
   }
-  
+
   /**
    * Functionality for closing a tab
    * 
    * @param tab the tab to close
    */
   private void closeTab(Tab tab) {
-      System.out.println("DEMO");
-      tabs.getTabs().remove(tab);
-      currentTab--;
-      
-      tables.remove(currentTable);
-      currentTable = tables.size() - 1;
-      updateTable();
-      
-      transactionNumber = getRecent().getLatestTransactionID();
+    System.out.println("DEMO");
+    tabs.getTabs().remove(tab);
+    currentTab--;
+
+    tables.remove(currentTable);
+    currentTable = tables.size() - 1;
+    updateTable();
+
+    transactionNumber = getRecent().getLatestTransactionID();
   }
 
   /**
@@ -756,34 +822,34 @@ public class Main extends Application {
    */
   private static Bookings importFile(File f, BooKeeper bk) {
     Bookings booking = new Bookings(f.getName());
-    
+
     try {
       Scanner sc = new Scanner(f);
       while (sc.hasNextLine()) {
         String line = sc.nextLine();
-        //split each line into string arrays
-        //the RegEx here split the items by comma and ignores commas in brackets
+        // split each line into string arrays
+        // the RegEx here split the items by comma and ignores commas in brackets
         String[] val = line.split(",(?![^\\[]*\\])");
-        Transaction trans = new Transaction(val[1],Integer.parseInt(val[0]));
-        
-        //parse debit
-        ArrayList<Account> debits = parseAccountList(parseArrayList(val[2],false),bk);
+        Transaction trans = new Transaction(val[1], Integer.parseInt(val[0]));
+
+        // parse debit
+        ArrayList<Account> debits = parseAccountList(parseArrayList(val[2], false), bk);
         trans.setDebitAccounts(debits);
-        trans.setDebitAmounts(parseArrayList(val[3],true));
-        
-        //parse credit
-        ArrayList<Account> credits = parseAccountList(parseArrayList(val[4],false),bk);
+        trans.setDebitAmounts(parseArrayList(val[3], true));
+
+        // parse credit
+        ArrayList<Account> credits = parseAccountList(parseArrayList(val[4], false), bk);
         trans.setCreditAccounts(credits);
-        trans.setCreditAmounts(parseArrayList(val[5],true));
-        
-        //put it into the booking with K=transactionID, V=Transaction
+        trans.setCreditAmounts(parseArrayList(val[5], true));
+
+        // put it into the booking with K=transactionID, V=Transaction
         booking.put(val[0], trans);
-        
+
       }
-      
+
       sc.close();
-      
-      Alert success = new Alert(AlertType.CONFIRMATION,"Import Success!");
+
+      Alert success = new Alert(AlertType.CONFIRMATION, "Import Success!");
       success.showAndWait();
     } catch (Exception e) {
       e.printStackTrace();
@@ -792,53 +858,56 @@ public class Main extends Application {
       importAlert.showAndWait();
     }
 
-    
+
     return booking;
   }
 
   /**
    * return an array list from a list in string format
-   * @param list - a string i.e. "[1,2,3]"
+   * 
+   * @param list     - a string i.e. "[1,2,3]"
    * @param isNumber - whether this is a String of an array of numbers
    * @return
    */
   private static ArrayList parseArrayList(String list, boolean isNumber) {
-    list = list.replace("[","").replace("]","");
-    
-    
+    list = list.replace("[", "").replace("]", "");
+
+
     String[] strList = list.split(",");
     ArrayList<String> result = new ArrayList<>(Arrays.asList(strList));
-    
-    if(isNumber) {
+
+    if (isNumber) {
       ArrayList<Integer> numbers = new ArrayList<>();
       for (String item : result) {
         numbers.add(Integer.parseInt(item));
       }
       return numbers;
     } else {
-      
+
       return result;
     }
   }
-  
+
   /**
    * Return a list of accounts that derived from a list of strings
+   * 
    * @param acctList List of strings that contains account names
-   * @param bk the book keeper class that tracking the current bookings
+   * @param bk       the book keeper class that tracking the current bookings
    * @return list of Account classes with references to the ones in the bookings class
    */
   private static ArrayList<Account> parseAccountList(List<String> acctList, BooKeeper bk) {
     ArrayList<Account> accounts = new ArrayList<>();
-    
-    for(String acctName : acctList) {
+
+    for (String acctName : acctList) {
       accounts.add(bk.getAccount(acctName.trim()));
     }
-    
+
     return accounts;
   }
-  
+
   /**
    * Return a new table and store it in the tables
+   * 
    * @return a new table
    */
   private static TableView createTable() {
@@ -846,9 +915,10 @@ public class Main extends Application {
     tables.add(newTable);
     return newTable;
   }
-  
+
   /**
    * Return a new borderpane and store it in the mains
+   * 
    * @return a new main border pane
    */
   private static BorderPane createMain() {
@@ -856,9 +926,10 @@ public class Main extends Application {
     mains.add(mainPane);
     return mainPane;
   }
-  
+
   /**
    * Return a new BooKeeper class to keep track of the accounts
+   * 
    * @return
    */
   private static BooKeeper createBK() {
@@ -866,35 +937,37 @@ public class Main extends Application {
     bks.add(bk);
     return bk;
   }
-  
-/**
- * updates the table displayed as the current table
- * @param values a collection of values
- */
+
+  /**
+   * updates the table displayed as the current table
+   * 
+   * @param values a collection of values
+   */
   private static void updateTable(Collection<Transaction> values) {
     TableView currentTable = (TableView) ((BorderPane) root.getCenter()).getCenter();
     currentTable.getItems().clear();
     currentTable.getItems().addAll(values);
   }
-  
+
   /**
    * Updates the table to the most recent data
    */
   private static void updateTable() {
-  //replace table items with the most recent import
+    // replace table items with the most recent import
     Bookings recent = getRecent();
-    //add all transactions into the table
+    // add all transactions into the table
     updateTable(recent.values());
   }
-  
+
   /**
    * Returns the most recent bookings data entered
+   * 
    * @return
    */
   private static Bookings getRecent() {
-    return data.get(data.size()-1);
+    return data.get(data.size() - 1);
   }
-  
+
   /**
    * @param args
    */
