@@ -79,7 +79,8 @@ public class Main extends Application {
   // tracks the current table's index in the tables field
   private static int currentTable = 0;
 
-  private static int currentTab = 0;
+  private static int numTabs = 0;
+  private static int currentTab = -1;
   private static TabPane tabs = new TabPane();
   // stores the data imported, each tab uses a Bookings class
   private static ArrayList<Bookings> data = new ArrayList<>();
@@ -102,8 +103,8 @@ public class Main extends Application {
     args = this.getParameters().getRaw();
 
     // Creates the new Table
-    TableView table = createTable();
-    table.setStyle("-fx-font: 15px Arial;\n");
+    // TableView table = createTable();
+    // table.setStyle("-fx-font: 15px Arial;\n");
 
     // Top menubars
     initializeTop(primaryStage);
@@ -112,7 +113,7 @@ public class Main extends Application {
     initializeMain();
 
     // the left file view and settings
-    initializeLeft(table);
+    initializeLeft();
 
     Scene mainScene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
 
@@ -166,28 +167,28 @@ public class Main extends Application {
 
     main.setTop(topBar);
 
-    TableView table = tables.get(currentTable);
+    // TableView table = tables.get(currentTable);
 
 
-    table.setEditable(true);
+    // table.setEditable(true);
 
     // transaction number column
     TableColumn<Integer, Transaction> transNumCol = new TableColumn<>("Transaction Number");
     transNumCol.setMinWidth(125);
     transNumCol
         .setCellValueFactory(new PropertyValueFactory<Integer, Transaction>("transactionNumber"));
-    table.getColumns().add(transNumCol);
+    // table.getColumns().add(transNumCol);
 
     // transaction date column
     TableColumn<LocalDateTime, Transaction> dateCol = new TableColumn<>("Time");
     dateCol.setMinWidth(100);
     dateCol.setCellValueFactory(new PropertyValueFactory<LocalDateTime, Transaction>("dateString"));
-    table.getColumns().add(dateCol);
+    // table.getColumns().add(dateCol);
 
     // Transaction Details column
     TableColumn detailsCol = new TableColumn("Transaction Details");
     detailsCol.setMinWidth(300);// fill the rest of screen
-    table.getColumns().add(detailsCol);
+    // table.getColumns().add(detailsCol);
 
 
     // TODO: try not hard coding the items
@@ -198,15 +199,15 @@ public class Main extends Application {
     t1.addDebitTransaction(cash, 99);
     Account inventory = new Account("Inventory");
     t1.addCreditTransaction(inventory, 99);
-    table.getItems().add(t1);
+    // table.getItems().add(t1);
 
     Transaction t2 = new Transaction(2);
     t2.setDate("04-20-2020 14:20");
     t2.addDebitTransaction(inventory, 100);
     t2.addCreditTransaction(cash, 100);
-    table.getItems().add(t2);
+    // table.getItems().add(t2);
 
-
+    /*
     // Add expandable rows to show details
     table.setRowFactory(tr -> new TableRow<Transaction>() {
       Node transactionDetails;
@@ -223,6 +224,7 @@ public class Main extends Application {
         });
 
       }
+      
 
       // calculate the pref height
       @Override
@@ -246,11 +248,12 @@ public class Main extends Application {
         }
       }
     });
+    */
 
     // set search functionality
     search(searchChoice, searchText);
 
-    main.setCenter(table);
+    //main.setCenter(table);
     // put the table and the topbars to main
     root.setCenter(main);
   }
@@ -271,9 +274,19 @@ public class Main extends Application {
    */
   @SuppressWarnings("unchecked")
   private void search(ChoiceBox<String> searchChoice, TextField searchText) {
-    TableView table = tables.get(this.currentTable);
-    ObservableList<TableColumn> columns = table.getColumns();
-    FilteredList filteredData = new FilteredList<>(table.getItems(), p -> true);
+    TableView table;
+    ObservableList<TableColumn> columns;
+    FilteredList filteredData;
+    
+    if (tables.size() > 0) {
+	table = tables.get(this.currentTable);
+	columns = table.getColumns();
+	filteredData = new FilteredList<>(table.getItems(), p -> true);
+    }
+    else {
+	return;
+    }
+    
 
     searchText.textProperty().addListener((observable, oldValue, newValue) -> {
       // lambda expression filters the data of the table into a filtered list
@@ -435,19 +448,10 @@ public class Main extends Application {
       File fileToImport = fileChooser.showOpenDialog(primaryStage);
       if (fileToImport != null) {
         data.add(importFile(fileToImport, createBK()));
-      }
-      TableView table = createTable();
-      // set current table to the latest one
-      currentTable = tables.size() - 1;
-
-      Tab newTab = new Tab("Journal Entry" + currentTab);
-      tabs.getTabs().add(newTab);
-      currentTab++;
-      newTab.setOnClosed(close -> closeTab(newTab));
-
-      updateTable();
-      // updates the transaction number as the most recent version
-      transactionNumber = getRecent().getLatestTransactionID();
+        addTab(getRecent().values());
+        // updates the transaction number as the most recent version
+        transactionNumber = getRecent().getLatestTransactionID();
+      }     
     });
 
 
@@ -688,7 +692,7 @@ public class Main extends Application {
    * 
    * @param root main BorderPane layout
    */
-  private void initializeLeft(TableView table) {
+  private void initializeLeft() {
 
     TreeItem<Path> treeItem = new TreeItem<Path>(Paths.get(System.getProperty("user.dir")));
     treeItem.setExpanded(false);
@@ -727,23 +731,12 @@ public class Main extends Application {
       @Override
       public void handle(MouseEvent mouseEvent) {
         if (mouseEvent.getClickCount() == 2) {
-
           TreeItem<Path> fileSelection = treeView.getSelectionModel().getSelectedItem();
 
           data.add(importFile(fileSelection.getValue().toFile(), createBK()));
-
-          TableView table = createTable();
-
-          // set current table to the latest one
-          currentTable = tables.size() - 1;
-
-          Tab newTab = new Tab("Journal Entry" + currentTab);
-          tabs.getTabs().add(newTab);
-          currentTab++;
-
-          newTab.setOnClosed(close -> closeTab(newTab));
-
-          updateTable();
+          
+          addTab(getRecent().values());
+          
           // updates the transaction number as the most recent version
           transactionNumber = getRecent().getLatestTransactionID();
         }
@@ -803,20 +796,60 @@ public class Main extends Application {
   }
 
   /**
-   * Functionality for closing a tab
+   * Functionality to add tabs when the user imports a new CSV file
    * 
-   * @param tab the tab to close
+   * @param values the values to put into the new table for this tab
    */
-  private void closeTab(Tab tab) {
-    System.out.println("DEMO");
-    tabs.getTabs().remove(tab);
-    currentTab--;
+  private void addTab(Collection<Transaction> values) {
+      createTable();
+      
+      if (currentTab < 0) {
+	  currentTab = 0;
+      }
+      
+      TableView currentTable = tables.get(numTabs);
+      currentTable.getItems().clear();
+      currentTable.getItems().addAll(values);    
+      BorderPane main = (BorderPane) root.getCenter();
+       
+      numTabs++;
+      Tab newTab = new Tab("Journal Entry" + numTabs);
+      newTab.setId("" + (numTabs - 1)); // id equal to index in tabs and tables array
+      tabs.getTabs().add(newTab);
 
-    tables.remove(currentTable);
-    currentTable = tables.size() - 1;
-    updateTable();
-
-    transactionNumber = getRecent().getLatestTransactionID();
+      newTab.setOnSelectionChanged(change -> switchTabs(newTab));
+      newTab.setOnClosed(close -> closeTab());
+      
+      
+      Bookings recent = getRecent();
+      
+      // only show new table if there is no other table to be shown
+      if (numTabs == 1) {
+	  main.setCenter(currentTable);
+      }
+  }
+  
+  /**
+   * Functionality to switch tabs. Also called when tabs are closed
+   * 
+   * @param newTab the tab to switch to
+   */
+  private void switchTabs(Tab newTab) {    
+      currentTab = Integer.parseInt(newTab.getId());
+      TableView currentTable = tables.get(currentTab);  
+      BorderPane main = (BorderPane) root.getCenter();
+      main.setCenter(currentTable);
+  }
+  
+  /**
+   * Functionality to close tabs. switchTabs() is called when tabs are closed
+   */
+  private void closeTab() {
+      numTabs--;
+      if (numTabs == 0) {
+	  BorderPane main = (BorderPane) root.getCenter();
+	  main.setCenter(null);
+      }
   }
 
   /**
@@ -938,8 +971,70 @@ public class Main extends Application {
    * 
    * @return a new table
    */
-  private static TableView createTable() {
+  @SuppressWarnings("unchecked")
+  private TableView createTable() {
     TableView newTable = new TableView();
+    newTable.setEditable(true);
+    
+    // transaction number column
+    TableColumn<Integer, Transaction> transNumCol = new TableColumn<>("Transaction Number");
+    transNumCol.setMinWidth(125);
+    transNumCol
+        .setCellValueFactory(new PropertyValueFactory<Integer, Transaction>("transactionNumber"));
+    newTable.getColumns().add(transNumCol);
+
+    // transaction date column
+    TableColumn<LocalDateTime, Transaction> dateCol = new TableColumn<>("Time");
+    dateCol.setMinWidth(100);
+    dateCol.setCellValueFactory(new PropertyValueFactory<LocalDateTime, Transaction>("dateString"));
+    newTable.getColumns().add(dateCol);
+
+    // Transaction Details column
+    TableColumn detailsCol = new TableColumn("Transaction Details");
+    detailsCol.setMinWidth(300);// fill the rest of screen
+    newTable.getColumns().add(detailsCol);
+    
+    // Add expandable rows to show details
+    newTable.setRowFactory(tr -> new TableRow<Transaction>() {
+      Node transactionDetails;
+      {// on selection of the row
+        this.selectedProperty().addListener((i, wasSelected, isSelected) -> {
+          if (isSelected) {
+            transactionDetails = constructSubTable(getItem());
+            selected = getItem();
+            this.getChildren().add(transactionDetails);
+          } else {
+            this.getChildren().remove(transactionDetails);
+          }
+          this.requestLayout();
+        });
+
+      }
+      
+
+      // calculate the pref height
+      @Override
+      protected double computePrefHeight(double width) {
+        if (isSelected()) {
+          return super.computePrefHeight(width) + transactionDetails.prefHeight(20);
+        } else {
+          return super.computePrefHeight(width);
+        }
+      }
+
+      // layout the sub table
+      @Override
+      protected void layoutChildren() {
+        super.layoutChildren();
+        if (isSelected()) {
+          double width = getWidth();
+          double paneHeight = transactionDetails.prefHeight(width);
+          transactionDetails.resizeRelocate(transNumCol.getWidth() + dateCol.getWidth(),
+              getHeight() - paneHeight, width, paneHeight);
+        }
+      }
+    });
+    
     tables.add(newTable);
     return newTable;
   }
@@ -971,10 +1066,12 @@ public class Main extends Application {
    * 
    * @param values a collection of values
    */
-  private static void updateTable(Collection<Transaction> values) {
-    TableView currentTable = (TableView) ((BorderPane) root.getCenter()).getCenter();
+  private static void updateTable(Collection<Transaction> values) {   
+    TableView currentTable = tables.get(currentTab);
     currentTable.getItems().clear();
-    currentTable.getItems().addAll(values);
+    currentTable.getItems().addAll(values);    
+    BorderPane main = (BorderPane) root.getCenter();
+    main.setCenter(currentTable);
   }
 
   /**
