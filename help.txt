@@ -1,0 +1,38 @@
+How to Use:
+
+1. Add/import new CSV file
+   a. To add or import an existing CSV file, click on "File" in the 
+       top menu bar and select "Import" from the dropdown 
+       menu, or find  the CSV file in the file tree on the left 
+       side of the application and double click it.
+   b. To create a new CSV file, click on "File" in the top menu bar 
+       and select "New File"
+
+2. Add/remove journal entries and add accounts
+   a. To modify journal entries and add accounts, click on "Edit" 
+       in the top menu bar and select the appropriate menu 
+       option from the dropdown menu.
+      
+3. Save a CSV file that has been modified
+   a. To save a CSV file, click on the save buttton located near 
+       the top of the application
+
+4. Search and filter current table
+   a. To search and filter the current table, either type the query 
+       in the text field above the table, or click on "Find" in the 
+       top menu bar and select "Search" from the dropdown 
+       menu
+   b. Can choose between searching by Transaction Number, 
+       Date, Account Name, and Amount by choosing the 
+       appropriate option from the dropdown menu located 
+       next to the search text field
+
+5. Window settings
+   a. To change the window settings, click on "Window" in the 
+       top menu bar and select "Settings" from the dropdown 
+       menu
+      
+6. Font settings
+   a. Options to change the font of the tables are located in the 
+       bottom left of the application
+      
