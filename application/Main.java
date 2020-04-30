@@ -773,13 +773,6 @@ public class Main extends Application {
     fontSizer.getItems().add("18");
     fontSizer.setValue("15");
 
-    Label line = new Label("Line Width:");
-    ComboBox lineWidth = new ComboBox();
-    lineWidth.getItems().add("1px");// TODO: add line width settings
-    lineWidth.getItems().add("2px");
-    lineWidth.getItems().add("4px");
-    lineWidth.setValue("1px");
-
     // change font functionality
     fontSel.setOnAction(e -> {
       changeFont(fontSel, fontSizer);
@@ -790,12 +783,7 @@ public class Main extends Application {
       changeFont(fontSel, fontSizer);
     });
 
-    // change line width functionality
-    lineWidth.setOnAction(e -> {
-      // TODO: Figure out how to change border width of a JavaFX tableview
-    });
-
-    leftBot.getChildren().addAll(style, fontSetting, fontSel, fontSize, fontSizer, line, lineWidth);
+    leftBot.getChildren().addAll(style, fontSetting, fontSel, fontSize, fontSizer);
 
     left.setTop(splitView);
     left.setCenter(leftBot);
