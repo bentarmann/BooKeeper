@@ -38,6 +38,7 @@ public class Account implements Comparable<Account> {
 
   private String accountName;
   private int amount;
+  private final boolean isDebit;//the default balance type
   private List<int[]> identifierList;
   
   /**
@@ -45,18 +46,20 @@ public class Account implements Comparable<Account> {
    * @param name
    * @param amount
    */
-  public Account(String name, int amount) {
+  public Account(String name, int amount, boolean isDebit) {
     this.accountName = name;
     this.amount = amount;
+    this.isDebit = isDebit;
     this.identifierList = new ArrayList<>();
   }
   
   /**
    * Initializes the account with 0 amount
    * @param name
+   * @param isDebit set the default type
    */
-  public Account(String name) {
-    this(name,0);
+  public Account(String name, boolean isDebit) {
+    this(name,0,isDebit);
   }
 
   /**
@@ -156,4 +159,25 @@ public class Account implements Comparable<Account> {
         (this.getAmount() == o.getAmount() ? 0 : 1));
   }
   
+  /**
+   * Credit the account
+   * @param amount
+   */
+  public void credit(int amount) {
+    if (isDebit)
+      this.amount -= amount;
+    else
+      this.amount += amount;
+  }
+  
+  /**
+   * Debit the account
+   * @param amount
+   */
+  public void debit(int amount) {
+    if (isDebit)
+      this.amount += amount;
+    else
+      this.amount -= amount;
+  }
 }

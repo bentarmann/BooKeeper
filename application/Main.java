@@ -24,17 +24,9 @@ package application;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -71,7 +63,7 @@ public class Main extends Application {
 
   private static final int WINDOW_WIDTH = 800;
   private static final int WINDOW_HEIGHT = 600;
-  private static final String APP_TITLE = "BooKeeper v0.2";
+  private static final String APP_TITLE = "BooKeeper v0.5";
   private static Font font = new Font("Arial", 15);
   private static int transactionNumber = 1;
   // stores the tables for display
@@ -194,10 +186,10 @@ public class Main extends Application {
     // TODO: try not hard coding the items
     Transaction t1 = new Transaction(1);
     t1.setDate("04-20-2020 14:20");
-    Account cash = new Account("Cash");
+    Account cash = new Account("Cash",true);
     t1.addDebitTransaction(cash, 99);
     t1.addDebitTransaction(cash, 99);
-    Account inventory = new Account("Inventory");
+    Account inventory = new Account("Inventory",true);
     t1.addCreditTransaction(inventory, 99);
     // table.getItems().add(t1);
 
@@ -462,9 +454,7 @@ public class Main extends Application {
     file.getItems().add(exportFile);
 
     exportFile.setOnAction(e -> {
-      //bks.get(currentBooKeeper)
-      //TODO
-      Financials.generateFinancials(new BooKeeper(), primaryStage);
+      Financials.generateFinancials(bks.get(currentBooKeeper), primaryStage);
     });
     
     // TODO:add a pointer to the current table in display
@@ -515,7 +505,7 @@ public class Main extends Application {
       // set action for entering width and height
       button.setOnAction(action -> {
         String input = accountComboBox.toString();
-        Account added = new Account("temp");
+        Account added = new Account("temp",true);
         for (Account i : tempList) {
           if (input.equals(i.getAccountName())) {
             added = i;
@@ -867,7 +857,7 @@ public class Main extends Application {
    * @param rootItem
    * @throws IOException
    */
-  public static void createTree(TreeItem<Path> rootItem) throws IOException {
+  private static void createTree(TreeItem<Path> rootItem) throws IOException {
 
     try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(rootItem.getValue())) {
 
@@ -912,6 +902,9 @@ public class Main extends Application {
         trans.setCreditAccounts(credits);
         trans.setCreditAmounts(parseArrayList(val[5], true));
 
+        //updates the bk
+        updateAccounts(trans);
+        
         // put it into the booking with K=transactionID, V=Transaction
         booking.put(val[0], trans);
 
@@ -1093,6 +1086,26 @@ public class Main extends Application {
     updateTable(recent.values());
   }
 
+  /**
+   * Updates the transaction to the bookeeper
+   * @param trans
+   * @param bk
+   */
+  private static void updateAccounts(Transaction trans) {
+    ArrayList<Account> debs = trans.getDebitAccounts();
+    ArrayList<Integer> debAmts = trans.getDebitAmounts();
+    for (int i=0;i<debs.size();i++) {
+      debs.get(i).debit(debAmts.get(i));
+    }
+    ArrayList<Account> creds = trans.getCreditAccounts();
+    ArrayList<Integer> credAmts = trans.getCreditAmounts();
+    for (int i=0;i<creds.size();i++) {
+      creds.get(i).credit(credAmts.get(i));
+    }
+    
+    
+  }
+  
   /**
    * Returns the most recent bookings data entered
    * 

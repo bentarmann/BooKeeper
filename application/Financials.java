@@ -171,8 +171,8 @@ public class Financials {
 
 
     String col = excelCol(colNum);
-String formula= "SUM("+col+rowNumToSum.get(0)+":"+col+rowNumToSum.get(rowNumToSum.size()-1)+")";
-    System.out.println("formula: " + formula);
+    String formula= "SUM("+col+rowNumToSum.get(0)+":"+col+rowNumToSum.get(rowNumToSum.size()-1)+")";
+    //System.out.println("formula: " + formula);
     // remove the last +
     
     cell.setCellFormula(formula);
