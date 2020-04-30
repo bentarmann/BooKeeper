@@ -159,11 +159,11 @@ public class BooKeeper {
       revenue.addIdentifier(operatingRevenue);
       accounts.add(revenue);
       
-      Account salesRev = new Account("Sales Revenues");
+      Account salesRev = new Account("Sales Revenue");
       salesRev.addIdentifier(operatingRevenue);
       accounts.add(salesRev);
       
-      Account serviceRev = new Account("Service Rev");
+      Account serviceRev = new Account("Service Revenue");
       serviceRev.addIdentifier(operatingRevenue);
       accounts.add(serviceRev);
       

@@ -1,0 +1,4 @@
+1,01-01-2020 14:20,[Cash,Account Receivable],[99,100],[Inventory],[199]
+2,01-01-2020 16:20,[Inventory],[100],[Cash],[100]
+3,01-01-2020 19:20,[Cost of Goods Sold],[999],[Revenue],[999]
+4,01-01-2020 20:20,[Sales],[10000],[Sales Discount,Sales Returns and Allowances],[5000,5000]
