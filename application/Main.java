@@ -227,22 +227,6 @@ public class Main extends Application {
     // table.getColumns().add(detailsCol);
 
 
-    // TODO: try not hard coding the items
-    Transaction t1 = new Transaction(1);
-    t1.setDate("04-20-2020 14:20");
-    Account cash = new Account("Cash", true);
-    t1.addDebitTransaction(cash, 99);
-    t1.addDebitTransaction(cash, 99);
-    Account inventory = new Account("Inventory", true);
-    t1.addCreditTransaction(inventory, 99);
-    // table.getItems().add(t1);
-
-    Transaction t2 = new Transaction(2);
-    t2.setDate("04-20-2020 14:20");
-    t2.addDebitTransaction(inventory, 100);
-    t2.addCreditTransaction(cash, 100);
-    // table.getItems().add(t2);
-
     /*
      * // Add expandable rows to show details table.setRowFactory(tr -> new TableRow<Transaction>()
      * { Node transactionDetails; {// on selection of the row
