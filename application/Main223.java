@@ -23,9 +23,7 @@
 package application;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -36,7 +34,6 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.*;
@@ -66,7 +63,7 @@ public class Main extends Application {
 
   private static final int WINDOW_WIDTH = 800;
   private static final int WINDOW_HEIGHT = 600;
-  private static final String APP_TITLE = "BooKeeper v0.6";
+  private static final String APP_TITLE = "BooKeeper v0.5";
   private static Font font = new Font("Arial", 15);
   private static int transactionNumber = 1;
   // stores the tables for display
@@ -105,7 +102,7 @@ public class Main extends Application {
     initializeTop(primaryStage);
 
     // initalize the main window
-    initializeMain(primaryStage);
+    initializeMain();
 
     // the left file view and settings
     initializeLeft();
@@ -125,58 +122,17 @@ public class Main extends Application {
    * 
    * @param root
    */
-  private void initializeMain(Stage stage) {
+  private void initializeMain() {
 
     BorderPane main = createMain();
-    main.setPadding(new Insets(5, 5, 5, 5));
     HBox mainTop = new HBox();
 
 
     // create save button
     Button save = new Button("Save");
-    save.setAlignment(Pos.TOP_RIGHT);
-    save.setOnMouseClicked(e -> {
-      // let user choose a location
-      FileChooser fileChooser = new FileChooser();
-      FileChooser.ExtensionFilter csvFilter =
-          new FileChooser.ExtensionFilter("CSV Files (*.csv)", "*.csv");
-      fileChooser.getExtensionFilters().add(csvFilter);
-      fileChooser.setTitle("Save Journal Entries");
-      File file = fileChooser.showSaveDialog(stage);
 
-      // save to csv
-      if (file != null) {
-        try (PrintWriter pw = new PrintWriter(file)) {
-          StringBuilder sb = new StringBuilder();
-          // get the transactions from the current bookings
-          Collection<Transaction> curr = data.get(currentTab).values();
-          // add each transactions
-          curr.forEach(t -> {
-            sb.append(t.toString());
-            sb.append("\n");
-          });
-
-          // write the transactions to file
-          pw.write(sb.toString());
-
-          Alert success = new Alert(AlertType.CONFIRMATION, "Saving Success!");
-          success.showAndWait();
-        } catch (Exception ex) {
-          String exportError = "Something wrong happen while saving the file!";
-          Alert exportAlert = new Alert(AlertType.ERROR, exportError);
-          exportAlert.showAndWait();
-        }
-      }
-
-    });
-
-    Pane tabs = new Pane(this.tabs, save);
-
-    save.setLayoutX(500);
-    save.setLayoutY(tabs.getLayoutY());
-
-    this.tabs.setLayoutX(0);
-    this.tabs.setLayoutY(tabs.getLayoutY());
+    HBox tabs = new HBox(this.tabs, save);
+    tabs.setSpacing(20);
 
 
 
@@ -489,7 +445,7 @@ public class Main extends Application {
     MenuItem insertEdit = new MenuItem("New Entry");
     edit.getItems().add(insertEdit);
     insertEdit.setOnAction(e -> {
-      Transaction t1 = new Transaction(transactionNumber++);
+      Transaction t1 = new Transaction(++transactionNumber);
       data.get(currentTab).put(Integer.toString(t1.getTransactionNumber()), t1);
       TableView curTable = tables.get(currentTable);
       curTable.getItems().add(t1);
@@ -527,8 +483,8 @@ public class Main extends Application {
       TextField amountTextField = new TextField("" + 0);
 
       Button button = new Button("Add Account");
-
-      // set action for adding
+      
+   // set action for adding 
       button.setOnAction(action -> {
         String numInput = transactionNumBox.toString();
         String input = accountComboBox.toString();
@@ -542,11 +498,11 @@ public class Main extends Application {
         }
         for (Account i : tempList) {
           if (input.equals(i.getAccountName())) {
-            if (i.isDebit()) {
-              data.get(currentTab).get(numInput).addDebitTransaction(i, amount);
-            } else {
-              data.get(currentTab).get(numInput).addCreditTransaction(i, amount);
-            }
+              if(i.isDebit()) {
+                data.get(currentTab).get(numInput).addDebitTransaction(i, amount);
+              } else {
+                data.get(currentTab).get(numInput).addCreditTransaction(i, amount);
+              } 
             break;
           }
         }
@@ -563,6 +519,7 @@ public class Main extends Application {
       insertVBox.getChildren().add(amountHBox);
       insertVBox.getChildren().add(button);
 
+      
 
 
       // prepare and show scene
@@ -952,7 +909,7 @@ public class Main extends Application {
       Alert success = new Alert(AlertType.CONFIRMATION, "Import Success!");
       success.showAndWait();
     } catch (Exception e) {
-      e.printStackTrace();
+      // e.printStackTrace();
       String importError = "Something wrong happen while reading the file!";
       Alert importAlert = new Alert(AlertType.ERROR, importError);
       importAlert.showAndWait();
@@ -979,7 +936,7 @@ public class Main extends Application {
     if (isNumber) {
       ArrayList<Integer> numbers = new ArrayList<>();
       for (String item : result) {
-        numbers.add(Integer.parseInt(item.strip()));
+        numbers.add(Integer.parseInt(item));
       }
       return numbers;
     } else {

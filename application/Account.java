@@ -188,4 +188,11 @@ public class Account implements Comparable<Account> {
   public String toString() {
     return this.accountName;
   }
+  
+  /**
+   * Returns if is Debit
+   */
+  public boolean isDebit() {
+    return isDebit;
+  }
 }
