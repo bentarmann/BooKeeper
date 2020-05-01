@@ -55,11 +55,10 @@ public class Financials {
    * @param bk bookeeper for list of accounts
    * @param name company name
    */
-  public static void generateFinancials(BooKeeper bk, Stage stage) {
+  public static void generateFinancials(BooKeeper bk, Stage stage, javafx.scene.text.Font font) {
     // create a new excel workbook
     XSSFWorkbook workBook = new XSSFWorkbook();
-
-
+    
     // let user choose a location
     FileChooser fileChooser = new FileChooser();
     FileChooser.ExtensionFilter xlsxFilter =
@@ -69,7 +68,7 @@ public class Financials {
     File file = fileChooser.showSaveDialog(stage);
 
     // generate the files, use the file name as company name
-    generateBS(workBook, bk, file.getName().replace(".xlsx", ""));
+    generateBS(workBook, bk, file.getName().replace(".xlsx", ""), font);
 
     // export to xlsx
     if (file != null) {
@@ -93,48 +92,55 @@ public class Financials {
    * @param bk
    * @return
    */
-  private static void generateBS(XSSFWorkbook workBook, BooKeeper bk, String name) {
+  private static void generateBS(XSSFWorkbook workBook, BooKeeper bk, String name, javafx.scene.text.Font font) {
 
     // Create a sheet
     XSSFSheet balSheet = workBook.createSheet("Balance Sheet");
+    balSheet.setDefaultColumnWidth(40);
     // Create title
     int rowNumber = 0;
     Row title = balSheet.createRow(rowNumber++);
     
-    CellStyle header = workBook.createCellStyle();  
-    header.setWrapText(true);
+    CellStyle header = titleStyle(workBook, font);
     Cell titleCell = title.createCell(0);
     titleCell.setCellValue(name.toUpperCase() + "\nCONSOLIDATED BALANCE SHEET"
         + "\n(in thousands, except per share data) ");
     titleCell.setCellStyle(header);
     
+    CellStyle plain = plainStyle(workBook, font);
+    
     // Create Headers
     Row dateRow = balSheet.createRow(rowNumber++);
+    CellStyle subheader = subtitleStyle(workBook, font); 
     // Assets
     dateRow.createCell(0).setCellValue("Assets");
     dateRow.createCell(1).setCellValue("YE 2020");
+    dateRow.getCell(0).setCellStyle(subheader);
+    dateRow.getCell(1).setCellStyle(subheader);
     // Current Assets
-    rowNumber = createSections(balSheet, rowNumber, "Current Assets", new int[] {1, 0, 0}, bk);
+    rowNumber = createSections(balSheet, rowNumber, "Current Assets", new int[] {1, 0, 0}, bk, subheader, plain);
     // Fixed Assets
-    rowNumber = createSections(balSheet, rowNumber, "Fixed Assets", new int[] {1, 0, 1}, bk);
+    rowNumber = createSections(balSheet, rowNumber, "Fixed Assets", new int[] {1, 0, 1}, bk, subheader, plain);
 
 
     // Liabilities
     Row liabRow = balSheet.createRow(rowNumber++);
     liabRow.createCell(0).setCellValue("Liabilities");
+    liabRow.getCell(0).setCellStyle(subheader);
     // Current Liabilities
-    rowNumber = createSections(balSheet, rowNumber, "Current Liabilities", new int[] {1, 1, 0}, bk);
+    rowNumber = createSections(balSheet, rowNumber, "Current Liabilities", new int[] {1, 1, 0}, bk, subheader, plain);
     // Long Term Liabilities
     rowNumber =
-        createSections(balSheet, rowNumber, "Long Term Liabilities", new int[] {1, 1, 1}, bk);
+        createSections(balSheet, rowNumber, "Long Term Liabilities", new int[] {1, 1, 1}, bk, subheader, plain);
 
     // Stockholder's Equity
     Row seRow = balSheet.createRow(rowNumber++);
     seRow.createCell(0).setCellValue("Stockholder's Equity");
+    seRow.getCell(0).setCellStyle(subheader);
     // Paid-in Capital
-    rowNumber = createSections(balSheet, rowNumber, "Paid-in Capital", new int[] {1, 2, 0}, bk);
+    rowNumber = createSections(balSheet, rowNumber, "Paid-in Capital", new int[] {1, 2, 0}, bk, subheader, plain);
     // Other
-    rowNumber = createSections(balSheet, rowNumber, "Other", new int[] {1, 2, 1}, bk);
+    rowNumber = createSections(balSheet, rowNumber, "Other", new int[] {1, 2, 1}, bk, subheader, plain);
 
   }
 
@@ -178,22 +184,30 @@ public class Financials {
    * @return the ending row number
    */
   private static int createSections(XSSFSheet sheet, int startingRow, String rowHeader,
-      int[] identifier, BooKeeper bk) {
+      int[] identifier, BooKeeper bk, CellStyle subtitle, CellStyle plain) {
     Row row = sheet.createRow(startingRow++);
     row.createCell(0).setCellValue(rowHeader);
-
+    row.getCell(0).setCellStyle(subtitle);
+    
     ArrayList<Account> accts = getAccounts(identifier, bk);
     ArrayList<Integer> rowNums = new ArrayList<>();
 
     for (Account acct : accts) {
       rowNums.add(startingRow);
-      Row fixedAssetRow = sheet.createRow(startingRow++);
-      fixedAssetRow.createCell(0).setCellValue(acct.getAccountName());
-      fixedAssetRow.createCell(1).setCellValue(acct.getAmount());
+      Row subRow = sheet.createRow(startingRow++);
+      subRow.createCell(0).setCellValue(acct.getAccountName());
+      subRow.createCell(1).setCellValue(acct.getAmount());
+      subRow.getCell(0).setCellStyle(plain);
+      subRow.getCell(1).setCellStyle(plain);
     }
+    
+    //summation row
     Row sumRow = sheet.createRow(startingRow++);
+    sumRow.createCell(0).setCellValue("Total "+rowHeader);
+    sumRow.getCell(0).setCellStyle(plain);
     Cell sumCell = sumRow.createCell(1);
     sumFormula(sumCell, rowNums, 1);
+    sumCell.setCellStyle(plain);
 
     return startingRow;
   }
@@ -260,6 +274,71 @@ public class Financials {
     Collections.sort(acctList);
     return acctList;
   }
+  
+  /**
+   * Creates style for subtitles
+   * @param workBook
+   * @param font
+   * @return
+   */
+  private static CellStyle subtitleStyle(XSSFWorkbook workBook, javafx.scene.text.Font font) {
+    Font title = workBook.createFont();
+    title.setFontName(font.getName());
+    title.setFontHeightInPoints((short) font.getSize());
+    title.setBold(true);
+    
+    CellStyle subtitleStyle = workBook.createCellStyle();
+    subtitleStyle.setAlignment(HorizontalAlignment.LEFT);
+    subtitleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+    subtitleStyle.setFont(title);
+    subtitleStyle.setWrapText(true);
+    
+    return subtitleStyle;
+  }
+  
+  /**
+   * creates style for the title
+   * @param workBook
+   * @param font
+   * @return
+   */
+  private static CellStyle titleStyle(XSSFWorkbook workBook, javafx.scene.text.Font font) {
+    Font title = workBook.createFont();
+    title.setFontName(font.getName());
+    title.setFontHeightInPoints((short) font.getSize());
+    title.setBold(true);
+    
+    CellStyle titleStyle = workBook.createCellStyle();
+    titleStyle.setAlignment(HorizontalAlignment.CENTER);
+    titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+    titleStyle.setFont(title);
+    titleStyle.setWrapText(true);
+    
+    return titleStyle;
+    
+  }
+  
+  /**
+   * creates style for the default text
+   * @param workBook
+   * @param font
+   * @return
+   */
+  private static CellStyle plainStyle(XSSFWorkbook workBook, javafx.scene.text.Font font) {
+    Font title = workBook.createFont();
+    title.setFontName(font.getName());
+    title.setFontHeightInPoints((short) font.getSize());
+    title.setBold(false);
+    
+    CellStyle plainStyle = workBook.createCellStyle();
+    plainStyle.setAlignment(HorizontalAlignment.LEFT);
+    plainStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+    plainStyle.setFont(title);
+    plainStyle.setWrapText(true);
+    
+    return plainStyle;
+  }
+  
   
   
 //  public static void main(String[] args) {

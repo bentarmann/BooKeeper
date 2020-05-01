@@ -480,7 +480,7 @@ public class Main extends Application {
     file.getItems().add(exportFile);
 
     exportFile.setOnAction(e -> {
-      Financials.generateFinancials(bks.get(currentBooKeeper), primaryStage);
+      Financials.generateFinancials(bks.get(currentBooKeeper), primaryStage, font);
     });
 
     // TODO:add a pointer to the current table in display
@@ -829,6 +829,7 @@ public class Main extends Application {
     for (TableView table : tables) {
       table.setStyle("-fx-font: " + fontSizer.getValue() + "px \"" + fontSel.getValue() + "\";\n");
     }
+    this.font = new Font(fontSel.getValue().toString(), Double.parseDouble(fontSizer.getValue().toString()));
   }
 
   /**
