@@ -489,7 +489,7 @@ public class Main extends Application {
       }
       ComboBox<Integer> transactionNumBox =
           new ComboBox<Integer>(FXCollections.observableArrayList(numTransactions));
-      Label debCredLabel = new Label("Debit/Credit:                ");
+      Label debCredLabel = new Label("Debit/Credit:                   ");
       ArrayList<String> debCredList = new ArrayList<String>();
       debCredList.add("Debit");
       debCredList.add("Credit");
@@ -513,6 +513,7 @@ public class Main extends Application {
       // set action for adding
       button.setOnAction(action -> {
         String numInput = transactionNumBox.getSelectionModel().getSelectedItem().toString();
+        String accType = debCredBox.getSelectionModel().getSelectedItem().toString();
         String input = accountComboBox.getSelectionModel().getSelectedItem().toString();
         int amount = 0;
         String input2 = amountTextField.getCharacters().toString();
@@ -522,12 +523,17 @@ public class Main extends Application {
           Alert windowAlert = new Alert(AlertType.ERROR, "Please enter a valid number");
           windowAlert.showAndWait();
         }
-        for (Account i : tempList) {
+        for (Account i : bks.get(currentBooKeeper).accounts) {
           if (input.equals(i.getAccountName())) {
-            if (i.isDebit()) {
+            if (accType.equals("Debit")) {
               data.get(currentTab).get(numInput).addDebitTransaction(i, amount);
-            } else {
+              i.debit(amount);
+            } else if (accType.equals("Credit")) {
               data.get(currentTab).get(numInput).addCreditTransaction(i, amount);
+              i.credit(amount);
+            } else {
+              Alert windowAlert = new Alert(AlertType.ERROR, "Please select Debit/Credit");
+              windowAlert.showAndWait();
             }
             break;
           }
@@ -538,6 +544,9 @@ public class Main extends Application {
       numberHBox.getChildren().add(transactionNum);
       numberHBox.getChildren().add(transactionNumBox);
       insertVBox.getChildren().add(numberHBox);
+      debCredHBox.getChildren().add(debCredLabel);
+      debCredHBox.getChildren().add(debCredBox);
+      insertVBox.getChildren().add(debCredHBox);
       accountHBox.getChildren().add(accountLabel);
       accountHBox.getChildren().add(accountComboBox);
       insertVBox.getChildren().add(accountHBox);
@@ -559,6 +568,7 @@ public class Main extends Application {
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     deleteEdit.setOnAction(e -> {
       // setup new scene
+      final Stage dialog = new Stage();
       VBox insertVBox = new VBox();
       HBox numberHBox = new HBox();
       Scene insertScene = new Scene(insertVBox, 300, 100);
@@ -577,7 +587,16 @@ public class Main extends Application {
       // set action for adding
       button.setOnAction(action -> {
         String numInput = transactionNumBox.getSelectionModel().getSelectedItem().toString();
-
+        data.get(currentTab).remove(numInput);
+        tables.get(currentTable).getItems().remove(Integer.parseInt(numInput) - 1);
+        // for(int i = Integer.parseInt(numInput); i <= transactionNumber; i++ ) {
+        // Transaction j = data.get(currentTab).get(Integer.toString(i));
+        // tables.get(currentTable).getItems().remove(i);
+        // tables.get(currentTable).getItems().add(j);
+        // data.get(currentTab).remove(Integer.toString(i));
+        // data.get(currentTab).put(Integer.toString(j.getTransactionNumber()), j);
+        // }
+        dialog.close();
       });
 
       numberHBox.getChildren().add(transactionNum);
@@ -588,7 +607,6 @@ public class Main extends Application {
 
 
       // prepare and show scene
-      final Stage dialog = new Stage();
       dialog.initModality(Modality.APPLICATION_MODAL);
       dialog.initOwner(primaryStage);
       dialog.setScene(insertScene);
