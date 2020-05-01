@@ -489,7 +489,7 @@ public class Main extends Application {
     MenuItem insertEdit = new MenuItem("New Entry");
     edit.getItems().add(insertEdit);
     insertEdit.setOnAction(e -> {
-      Transaction t1 = new Transaction(transactionNumber++);
+      Transaction t1 = new Transaction(++transactionNumber);
       data.get(currentTab).put(Integer.toString(t1.getTransactionNumber()), t1);
       TableView curTable = tables.get(currentTable);
       curTable.getItems().add(t1);
@@ -497,7 +497,8 @@ public class Main extends Application {
 
     MenuItem insertAccount = new MenuItem("Add Account");
     insertAccount.setOnAction(e -> {
-      // setup new scene
+      // setup new scene and stage
+      final Stage dialog = new Stage();
       VBox insertVBox = new VBox();
       HBox numberHBox = new HBox();
       HBox accountHBox = new HBox();
@@ -523,15 +524,15 @@ public class Main extends Application {
       ComboBox<String> accountComboBox =
           new ComboBox<String>(FXCollections.observableList(tempListName));
 
-      Label amountLabel = new Label("Amount:                           ");
+      Label amountLabel = new Label("Amount:                         ");
       TextField amountTextField = new TextField("" + 0);
 
       Button button = new Button("Add Account");
 
       // set action for adding
       button.setOnAction(action -> {
-        String numInput = transactionNumBox.toString();
-        String input = accountComboBox.toString();
+        String numInput = transactionNumBox.getSelectionModel().getSelectedItem().toString();
+        String input = accountComboBox.getSelectionModel().getSelectedItem().toString();
         int amount = 0;
         String input2 = amountTextField.getCharacters().toString();
         try {
@@ -550,6 +551,7 @@ public class Main extends Application {
             break;
           }
         }
+        dialog.close();
       });
 
       numberHBox.getChildren().add(transactionNum);
@@ -563,6 +565,45 @@ public class Main extends Application {
       insertVBox.getChildren().add(amountHBox);
       insertVBox.getChildren().add(button);
 
+      // prepare and show scene
+      dialog.initModality(Modality.APPLICATION_MODAL);
+      dialog.initOwner(primaryStage);
+      dialog.setScene(insertScene);
+      dialog.setTitle("Add Account");
+      dialog.show();
+    });
+    edit.getItems().add(insertAccount);
+
+    
+    MenuItem deleteEdit = new MenuItem("Delete Entry");
+    deleteEdit.setOnAction(e -> {
+      // setup new scene
+      VBox insertVBox = new VBox();
+      HBox numberHBox = new HBox();
+      Scene insertScene = new Scene(insertVBox, 300, 100);
+
+      // add elements to scene
+      Label transactionNum = new Label("Transaction Number:      ");
+      ArrayList<Integer> numTransactions = new ArrayList<Integer>();
+      for (int i = 1; i <= transactionNumber; i++) {
+        numTransactions.add(i);
+      }
+      ComboBox<Integer> transactionNumBox =
+          new ComboBox<Integer>(FXCollections.observableArrayList(numTransactions));
+   
+      Button button = new Button("Delete ");
+
+      // set action for adding
+      button.setOnAction(action -> {
+        String numInput = transactionNumBox.getSelectionModel().getSelectedItem().toString();
+        
+      });
+
+      numberHBox.getChildren().add(transactionNum);
+      numberHBox.getChildren().add(transactionNumBox);
+      insertVBox.getChildren().add(numberHBox);
+      insertVBox.getChildren().add(button);
+
 
 
       // prepare and show scene
@@ -573,9 +614,6 @@ public class Main extends Application {
       dialog.setTitle("Add Account");
       dialog.show();
     });
-    edit.getItems().add(insertAccount);
-
-    MenuItem deleteEdit = new MenuItem("Delete Entry");
     edit.getItems().add(deleteEdit);
 
     // find menu
