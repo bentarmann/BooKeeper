@@ -489,7 +489,7 @@ public class Main extends Application {
       }
       ComboBox<Integer> transactionNumBox =
           new ComboBox<Integer>(FXCollections.observableArrayList(numTransactions));
-      Label debCredLabel = new Label("Debit/Credit:                ");
+      Label debCredLabel = new Label("Debit/Credit:                   ");
       ArrayList<String> debCredList = new ArrayList<String>();
       debCredList.add("Debit");
       debCredList.add("Credit");
@@ -513,6 +513,7 @@ public class Main extends Application {
       // set action for adding
       button.setOnAction(action -> {
         String numInput = transactionNumBox.getSelectionModel().getSelectedItem().toString();
+        String accType = debCredBox.getSelectionModel().getSelectedItem().toString();
         String input = accountComboBox.getSelectionModel().getSelectedItem().toString();
         int amount = 0;
         String input2 = amountTextField.getCharacters().toString();
@@ -524,10 +525,13 @@ public class Main extends Application {
         }
         for (Account i : tempList) {
           if (input.equals(i.getAccountName())) {
-            if (i.isDebit()) {
+            if (accType.equals("Debit")) {
               data.get(currentTab).get(numInput).addDebitTransaction(i, amount);
-            } else {
+            } else if (accType.equals("Credit")) {
               data.get(currentTab).get(numInput).addCreditTransaction(i, amount);
+            } else {
+              Alert windowAlert = new Alert(AlertType.ERROR, "Please select Debit/Credit");
+              windowAlert.showAndWait();
             }
             break;
           }
@@ -538,6 +542,9 @@ public class Main extends Application {
       numberHBox.getChildren().add(transactionNum);
       numberHBox.getChildren().add(transactionNumBox);
       insertVBox.getChildren().add(numberHBox);
+      debCredHBox.getChildren().add(debCredLabel);
+      debCredHBox.getChildren().add(debCredBox);
+      insertVBox.getChildren().add(debCredHBox);
       accountHBox.getChildren().add(accountLabel);
       accountHBox.getChildren().add(accountComboBox);
       insertVBox.getChildren().add(accountHBox);
