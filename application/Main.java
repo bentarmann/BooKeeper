@@ -250,7 +250,7 @@ public class Main extends Application {
 
     // set search functionality
     searchText.setOnMouseClicked(e -> {
-	search(searchChoice, searchText);
+      search(searchChoice, searchText);
     });
 
     // main.setCenter(table);
@@ -312,12 +312,12 @@ public class Main extends Application {
             break;
           case "Account Name":
             for (Account debitAccount : t.getDebitAccounts()) {
-              if (debitAccount.getAccountName().compareToIgnoreCase(searchText.getText())==0) {
+              if (debitAccount.getAccountName().compareToIgnoreCase(searchText.getText()) == 0) {
                 return true;
               }
             }
             for (Account creditAccount : t.getCreditAccounts()) {
-              if (creditAccount.getAccountName().compareToIgnoreCase(searchText.getText())==0) {
+              if (creditAccount.getAccountName().compareToIgnoreCase(searchText.getText()) == 0) {
                 return true;
               }
             }
@@ -463,7 +463,7 @@ public class Main extends Application {
     MenuItem insertEdit = new MenuItem("New Entry");
     edit.getItems().add(insertEdit);
     insertEdit.setOnAction(e -> {
-      Transaction t1 = new Transaction(transactionNumber++);
+      Transaction t1 = new Transaction(++transactionNumber);
       data.get(currentTab).put(Integer.toString(t1.getTransactionNumber()), t1);
       TableView curTable = tables.get(currentTable);
       curTable.getItems().add(t1);
@@ -475,10 +475,11 @@ public class Main extends Application {
       final Stage dialog = new Stage();
       VBox insertVBox = new VBox();
       HBox numberHBox = new HBox();
+      HBox debCredHBox = new HBox();
       HBox accountHBox = new HBox();
       HBox amountHBox = new HBox();
 
-      Scene insertScene = new Scene(insertVBox, 640, 130);
+      Scene insertScene = new Scene(insertVBox, 640, 150);
 
       // add elements to scene
       Label transactionNum = new Label("Transaction Number:      ");
@@ -488,6 +489,12 @@ public class Main extends Application {
       }
       ComboBox<Integer> transactionNumBox =
           new ComboBox<Integer>(FXCollections.observableArrayList(numTransactions));
+      Label debCredLabel = new Label("Debit/Credit:                ");
+      ArrayList<String> debCredList = new ArrayList<String>();
+      debCredList.add("Debit");
+      debCredList.add("Credit");
+      ComboBox<String> debCredBox =
+          new ComboBox<String>(FXCollections.observableArrayList(debCredList));
       Label accountLabel = new Label("Account Type:                ");
       BooKeeper temp = bks.get(currentBooKeeper);
       List<Account> tempList = temp.accounts;
@@ -548,7 +555,7 @@ public class Main extends Application {
     });
     edit.getItems().add(insertAccount);
 
-    
+
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     deleteEdit.setOnAction(e -> {
       // setup new scene
@@ -564,13 +571,13 @@ public class Main extends Application {
       }
       ComboBox<Integer> transactionNumBox =
           new ComboBox<Integer>(FXCollections.observableArrayList(numTransactions));
-   
+
       Button button = new Button("Delete ");
 
       // set action for adding
       button.setOnAction(action -> {
         String numInput = transactionNumBox.getSelectionModel().getSelectedItem().toString();
-        
+
       });
 
       numberHBox.getChildren().add(transactionNum);
@@ -841,7 +848,8 @@ public class Main extends Application {
     for (TableView table : tables) {
       table.setStyle("-fx-font: " + fontSizer.getValue() + "px \"" + fontSel.getValue() + "\";\n");
     }
-    this.font = new Font(fontSel.getValue().toString(), Double.parseDouble(fontSizer.getValue().toString()));
+    this.font = new Font(fontSel.getValue().toString(),
+        Double.parseDouble(fontSizer.getValue().toString()));
   }
 
   /**
