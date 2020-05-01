@@ -373,7 +373,7 @@ public class Main extends Application {
     ListView debAmt = new ListView(FXCollections.observableArrayList(t.getDebitAmounts()));
     HBox deb = new HBox(debLabel, debAcct, debAmt);
 
-    deb.setPrefHeight((t.getDebitAmounts().size() * 25));
+    deb.setPrefHeight((t.getDebitAmounts().size() * 30));
     deb.setMaxWidth(250);
     deb.setSpacing(5);
 
@@ -386,7 +386,7 @@ public class Main extends Application {
         new ListView(FXCollections.observableArrayList(getAccountNames(t.getCreditAccounts())));
     ListView credAmt = new ListView(FXCollections.observableArrayList(t.getCreditAmounts()));
     HBox cred = new HBox(credLabel, credAcct, credAmt);
-    cred.setPrefHeight((t.getCreditAmounts().size() * 25));
+    cred.setPrefHeight((t.getCreditAmounts().size() * 30));
     cred.setMaxWidth(250);
     cred.setSpacing(5);
 
@@ -1076,7 +1076,7 @@ public class Main extends Application {
       @Override
       protected double computePrefHeight(double width) {
         if (isSelected()) {
-          return super.computePrefHeight(width) + transactionDetails.prefHeight(20);
+          return super.computePrefHeight(width) + transactionDetails.prefHeight(25);
         } else {
           return super.computePrefHeight(width);
         }
