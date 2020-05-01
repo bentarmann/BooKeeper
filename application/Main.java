@@ -253,7 +253,9 @@ public class Main extends Application {
      */
 
     // set search functionality
-    search(searchChoice, searchText);
+    searchText.setOnMouseClicked(e -> {
+	search(searchChoice, searchText);
+    });
 
     // main.setCenter(table);
     // put the table and the topbars to main
@@ -281,7 +283,7 @@ public class Main extends Application {
     FilteredList filteredData;
 
     if (tables.size() > 0) {
-      table = tables.get(this.currentTable);
+      table = tables.get(currentTab);
       columns = table.getColumns();
       filteredData = new FilteredList<>(table.getItems(), p -> true);
     } else {
