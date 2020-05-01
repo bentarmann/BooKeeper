@@ -312,12 +312,12 @@ public class Main extends Application {
             break;
           case "Account Name":
             for (Account debitAccount : t.getDebitAccounts()) {
-              if (debitAccount.getAccountName().contains(searchText.getText())) {
+              if (debitAccount.getAccountName().compareToIgnoreCase(searchText.getText())==0) {
                 return true;
               }
             }
             for (Account creditAccount : t.getCreditAccounts()) {
-              if (creditAccount.getAccountName().contains(searchText.getText())) {
+              if (creditAccount.getAccountName().compareToIgnoreCase(searchText.getText())==0) {
                 return true;
               }
             }
