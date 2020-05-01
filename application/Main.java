@@ -66,7 +66,7 @@ public class Main extends Application {
 
   private static final int WINDOW_WIDTH = 800;
   private static final int WINDOW_HEIGHT = 600;
-  private static final String APP_TITLE = "BooKeeper v0.65";
+  private static final String APP_TITLE = "BooKeeper v1.0";
   private static Font font = new Font("Arial", 15);
   private static int transactionNumber = 1;
   // stores the tables for display
@@ -422,8 +422,8 @@ public class Main extends Application {
     MenuBar topMb = new MenuBar();
 
     Menu file = new Menu("File");
-    MenuItem newFile = new MenuItem("New File");
-    file.getItems().add(newFile);
+    //MenuItem newFile = new MenuItem("New File");
+    //file.getItems().add(newFile);
 
 
 
