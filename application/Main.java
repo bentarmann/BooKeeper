@@ -97,10 +97,6 @@ public class Main extends Application {
     // save args example
     args = this.getParameters().getRaw();
 
-    // Creates the new Table
-    // TableView table = createTable();
-    // table.setStyle("-fx-font: 15px Arial;\n");
-
     // Top menubars
     initializeTop(primaryStage);
 
@@ -395,15 +391,6 @@ public class Main extends Application {
     // combine these two
     VBox vb = new VBox(deb, cred);
     vb.setSpacing(5);
-
-    // create a background fill
-    // BackgroundFill bf =
-    // new BackgroundFill(Color.DARKGREY, CornerRadii.EMPTY, Insets.EMPTY);
-
-    // create Background
-    // Background bg = new Background(bf);
-
-    // vb.setBackground(bg);
 
     return vb;
   }
