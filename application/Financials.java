@@ -69,7 +69,7 @@ public class Financials {
 
     // generate the files, use the file name as company name
     generateBS(workBook, bk, file.getName().replace(".xlsx", ""), font);
-
+    generateIS(workBook, bk, file.getName().replace(".xlsx", ""), font);
     // export to xlsx
     if (file != null) {
       try {
@@ -150,27 +150,102 @@ public class Financials {
    * @param bk bookeeper for list of accounts
    * @param name company name
    */
-  private static void generateIS(XSSFWorkbook workBook, BooKeeper bk, String name) {
+  private static void generateIS(XSSFWorkbook workBook, BooKeeper bk, String name, javafx.scene.text.Font font) {
     // Create a sheet
     XSSFSheet incSheet = workBook.createSheet("Income Statement");
+    incSheet.setDefaultColumnWidth(40);
     // Create title
+    
+    CellStyle plain = plainStyle(workBook, font);
+    CellStyle subheader = subtitleStyle(workBook, font); 
+    
     int rowNumber = 0;
     Row title = incSheet.createRow(rowNumber++);
-    CellStyle header = workBook.createCellStyle();  
-    header.setWrapText(true);
+    CellStyle header = titleStyle(workBook, font);  
     Cell titleCell = title.createCell(0);
     titleCell.setCellValue(name.toUpperCase() + "\nINCOME STATEMENT"
         + "\n(in thousands, except per share data) ");
     titleCell.setCellStyle(header);
     
-    // Create Headers
+    // date
     Row dateRow = incSheet.createRow(rowNumber++);
-    // Assets
-    dateRow.createCell(0).setCellValue("Assets");
     dateRow.createCell(1).setCellValue("YE 2020");
+    dateRow.getCell(1).setCellStyle(subheader);
+    
+    ArrayList<Integer> rowNums = new ArrayList<Integer>();
+    //sales
+    rowNums.add(rowNumber);
+    Row netSaleRow = incSheet.createRow(rowNumber++);
+    netSaleRow.createCell(0).setCellValue("Net Sales");
+    netSaleRow.createCell(1).setCellValue(bk.getNetRevenue());
+    netSaleRow.getCell(0).setCellStyle(plain);
+    netSaleRow.getCell(1).setCellStyle(plain);
+    
+    //cogs
+    rowNums.add(rowNumber);
+    Row cogsRow = incSheet.createRow(rowNumber++);
+    cogsRow.createCell(0).setCellValue("Cost of Goods Sold");
+    cogsRow.createCell(1).setCellValue(bk.getAccount("Cost of Goods Sold").getAmount());
+    cogsRow.getCell(0).setCellStyle(plain);
+    cogsRow.getCell(1).setCellStyle(plain);
+    
+    //add blank row
+    incSheet.createRow(rowNumber++);
+    
+    //gross row
+    Row sumRow = incSheet.createRow(rowNumber++);
+    sumRow.createCell(0).setCellValue("Gross Profit");
+    sumRow.getCell(0).setCellStyle(plain);
+    Cell sumCell = sumRow.createCell(1);
+    sumFormula(sumCell, rowNums, 1);
+    sumCell.setCellStyle(plain);
+    String gross = excelCol(1) + (rowNumber-1);
+    
+    rowNums.clear();
+    rowNums.add(rowNumber);
+    //Operating expenses
+    rowNumber = createSections(incSheet, rowNumber, "Operating Expenses", new int[] {0,1}, bk, subheader, plain);
+    rowNums.add(rowNumber-1);
+    //sum it up
+    String opExp = excelCol(1) + (rowNumber-1);
     
     
+  //non ops
+    rowNumber = createSections(incSheet, rowNumber, "Other Revenues and Gains", new int[] {0,2}, bk, subheader, plain);
+    rowNums.add(rowNumber-1);
+    //sum it up
+    String nonOpRev = excelCol(1) + (rowNumber-1);
     
+    rowNumber = createSections(incSheet, rowNumber, "Other Expenses and Losses", new int[] {0,3}, bk, subheader, plain);
+    rowNums.add(rowNumber-1);
+    //sum it up
+    String nonOpExp = excelCol(1) + (rowNumber-1);
+    
+  //before tax sum row
+    Row totalRow = incSheet.createRow(rowNumber++);
+    totalRow.createCell(0).setCellValue("Income before income Taxes");
+    totalRow.getCell(0).setCellStyle(plain);
+    Cell totalCell = totalRow.createCell(1);
+    String col = excelCol(1);
+    String formula= gross+"-"+opExp+"+"+nonOpRev+"-"+nonOpExp;
+    System.out.println(formula);
+    totalCell.setCellFormula(formula);
+    totalCell.setCellStyle(plain);
+    String totalBTax = excelCol(1) + (rowNumber);
+    
+    Row taxRow = incSheet.createRow(rowNumber++);
+    taxRow.createCell(0).setCellValue("Income Tax");
+    taxRow.createCell(1).setCellFormula(totalBTax+"*"+bk.taxRate);;
+    taxRow.getCell(0).setCellStyle(plain);
+    taxRow.getCell(1).setCellStyle(plain);
+    String totalTax = excelCol(1) + (rowNumber);
+    
+    
+    Row netIncomeRow = incSheet.createRow(rowNumber++);
+    netIncomeRow.createCell(0).setCellValue("Net Income");
+    netIncomeRow.createCell(1).setCellFormula(totalBTax+"-"+totalTax);
+    netIncomeRow.getCell(0).setCellStyle(plain);
+    netIncomeRow.getCell(1).setCellStyle(plain);
   }
   
   
@@ -225,7 +300,7 @@ public class Financials {
 
 
     String col = excelCol(colNum);
-    String formula= "SUM("+col+rowNumToSum.get(0)+":"+col+rowNumToSum.get(rowNumToSum.size()-1)+")";
+    String formula= "SUM("+col+(rowNumToSum.get(0)+1)+":"+col+(rowNumToSum.get(rowNumToSum.size()-1)+1)+")";
     //System.out.println("formula: " + formula);
     // remove the last +
     
