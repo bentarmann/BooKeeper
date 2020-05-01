@@ -489,7 +489,7 @@ public class Main extends Application {
       }
       ComboBox<Integer> transactionNumBox =
           new ComboBox<Integer>(FXCollections.observableArrayList(numTransactions));
-      Label debCredLabel = new Label("Debit/Credit:                ");
+      Label debCredLabel = new Label("Debit/Credit:                   ");
       ArrayList<String> debCredList = new ArrayList<String>();
       debCredList.add("Debit");
       debCredList.add("Credit");
@@ -513,6 +513,7 @@ public class Main extends Application {
       // set action for adding
       button.setOnAction(action -> {
         String numInput = transactionNumBox.getSelectionModel().getSelectedItem().toString();
+        String accType = debCredBox.getSelectionModel().getSelectedItem().toString();
         String input = accountComboBox.getSelectionModel().getSelectedItem().toString();
         int amount = 0;
         String input2 = amountTextField.getCharacters().toString();
