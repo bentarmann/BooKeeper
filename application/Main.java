@@ -66,7 +66,7 @@ public class Main extends Application {
 
   private static final int WINDOW_WIDTH = 800;
   private static final int WINDOW_HEIGHT = 600;
-  private static final String APP_TITLE = "BooKeeper v0.6";
+  private static final String APP_TITLE = "BooKeeper v0.65";
   private static Font font = new Font("Arial", 15);
   private static int transactionNumber = 1;
   // stores the tables for display
@@ -453,9 +453,10 @@ public class Main extends Application {
       File fileToImport = fileChooser.showOpenDialog(primaryStage);
       if (fileToImport != null) {
         data.add(importFile(fileToImport, createBK()));
-        addTab(getRecent().values());
+        Bookings recent = getRecent();
+        addTab(recent.values());
         // updates the transaction number as the most recent version
-        transactionNumber = getRecent().getLatestTransactionID();
+        transactionNumber = recent.getLatestTransactionID();
       }
     });
 
@@ -868,7 +869,10 @@ public class Main extends Application {
 
     TableView currentTable = tables.get(numTabs);
     currentTable.getItems().clear();
-    currentTable.getItems().addAll(values);
+    ArrayList<Transaction> temp = new ArrayList<>();
+    temp.addAll(values);
+    temp.sort(null);
+    currentTable.getItems().addAll(temp);
     BorderPane main = (BorderPane) root.getCenter();
 
     numTabs++;
@@ -878,9 +882,6 @@ public class Main extends Application {
 
     newTab.setOnSelectionChanged(change -> switchTabs(newTab));
     newTab.setOnClosed(close -> closeTab());
-
-
-    Bookings recent = getRecent();
 
     // only show new table if there is no other table to be shown
     if (numTabs == 1) {

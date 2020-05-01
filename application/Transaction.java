@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * @version 1.0
  * 
  */
-public class Transaction {
+public class Transaction implements Comparable<Transaction> {
 
   private int transactionNumber;
   private LocalDateTime date; //stores the local date and time
@@ -290,5 +290,16 @@ public class Transaction {
     
     return transaction;
     
+  }
+
+  /**
+   * Compares based on the transaction ID
+   * @param o the transaction to compare to
+   * @return -1 if lesser, 0 if equal, 1 if greater
+   */
+  @Override
+  public int compareTo(Transaction o) {
+    return (this.getTransactionNumber() < o.getTransactionNumber() ? -1 : 
+      (this.getTransactionNumber() == o.getTransactionNumber() ? 0 : 1));
   }
 }
