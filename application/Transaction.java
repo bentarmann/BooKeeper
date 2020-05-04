@@ -1,30 +1,17 @@
+/////////////////////////////////////////// FILE  HEADER ///////////////////////////////////////////
+//
+//Title: BooKeeper
+//Files: Main.java, BooKeeper.java, Bookings.java, Financials.java, Transaction.java
+//This File: Transaction.java
+//
+//Name: Alex Hertadi, Benjamin Tarmann, Qingqi Wu
+//
+///////////////////////////////////////// 100 COLUMNS WIDE /////////////////////////////////////////
+
 package application;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
-//////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
-//
-// Title:           Transaction.java 
-// Files:           (a list of all source files used by that program)
-// Course:          CS400 Lec001, Spring, 2020
-//
-// Author:          Qingqi Wu
-// Email:           qwu86@wisc.edu
-// Lecturer's Name: Debra Deppeler
-//
-///////////////////////////// CREDIT OUTSIDE HELP /////////////////////////////
-//
-// Students who get help from sources other than their partner must fully 
-// acknowledge and credit those sources of help here.  Instructors and TAs do 
-// not need to be credited here, but tutors, friends, relatives, room mates, 
-// strangers, and others do.  If you received no outside help from either type
-//  of source, then please explicitly indicate NONE.
-//
-// Persons:         NONE
-// Online Sources:  NONE
-//
-/////////////////////////////// 80 COLUMNS WIDE ///////////////////////////////
 
 /**
  * Transaction - This class uses arraylists that implement the ListADT 
@@ -32,7 +19,7 @@ import java.util.ArrayList;
  * updates the accounts in the process 
  * 
  * Bugs: none known
- * @author Qingqi Wu
+ * @author Alex Hertadi, Benjamin Tarmann, Qingqi Wu
  * @version 1.0
  * 
  */
@@ -288,8 +275,7 @@ public class Transaction implements Comparable<Transaction> {
     transaction += (creditAccounts.toString()+",");
     transaction += (creditAmounts.toString());
     
-    return transaction;
-    
+    return transaction; 
   }
 
   /**

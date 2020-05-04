@@ -2,35 +2,22 @@ package application;
 import java.util.ArrayList;
 import java.util.List;
 
-//////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
+/////////////////////////////////////////// FILE  HEADER ///////////////////////////////////////////
 //
-// Title:           Account.java 
-// Files:           (a list of all source files used by that program)
-// Course:          CS400 Lec001, Spring, 2020
+//Title: BooKeeper
+//Files: Main.java, BooKeeper.java, Bookings.java, Financials.java, Transaction.java
+//This File: Account.java
 //
-// Author:          Qingqi Wu
-// Email:           qwu86@wisc.edu
-// Lecturer's Name: Debra Deppeler
+//Name: Alex Hertadi, Benjamin Tarmann, Qingqi Wu
 //
-///////////////////////////// CREDIT OUTSIDE HELP /////////////////////////////
-//
-// Students who get help from sources other than their partner must fully 
-// acknowledge and credit those sources of help here.  Instructors and TAs do 
-// not need to be credited here, but tutors, friends, relatives, room mates, 
-// strangers, and others do.  If you received no outside help from either type
-//  of source, then please explicitly indicate NONE.
-//
-// Persons:         NONE
-// Online Sources:  NONE
-//
-/////////////////////////////// 80 COLUMNS WIDE ///////////////////////////////
+///////////////////////////////////////// 100 COLUMNS WIDE /////////////////////////////////////////
 
 /**
  * Account - Represents a single account including name 
  * and its current amount
  * 
- * Bugs: none known
- * @author Qingqi Wu
+ * Bugs: None known
+ * @author Alex Hertadi, Benjamin Tarmann, Qingqi Wu
  * @version 1.0
  * 
  */

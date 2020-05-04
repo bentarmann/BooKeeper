@@ -1,15 +1,12 @@
 README
 
-Course: cs400
-Semester: Spring 2020
-Project name: BooKeeper
+Project Name: BooKeeper
+
+Program Description: This program is an application for managing financial accounts and bookkeeping. The GUI for this application is written using JavaFX. 
+
 Team Members:
-1. Qingqi Wu, lecture 001, qwu86@wisc.edu
-2. Alexander F Hertadi, lecture 002, hertadi@wisc.edu
-3. Benjamin H Tarmann, lecture 001, btarmann@wisc.edu
- 
+1. Qingqi Wu
+2. Alexander F Hertadi
+3. Benjamin H Tarmann
 
-Which team members were on same xteam together?
-Qingqi Wu xTeam153
 
-Other notes or comments to the grader:

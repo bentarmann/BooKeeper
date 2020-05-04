@@ -1,25 +1,13 @@
-//////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
+/////////////////////////////////////////// FILE  HEADER ///////////////////////////////////////////
 //
-// Title: Financials.java
-// Files: (a list of all source files used by that program)
-// Course: CS400 Lec001, Spring, 2020
+//Title: BooKeeper
+//Files: Main.java, BooKeeper.java, Bookings.java, Financials.java, Transaction.java
+//This File: Financials.java
 //
-// Author: Qingqi Wu
-// Email: qwu86@wisc.edu
-// Lecturer's Name: Debra Deppeler
+//Name: Alex Hertadi, Benjamin Tarmann, Qingqi Wu
 //
-///////////////////////////// CREDIT OUTSIDE HELP /////////////////////////////
-//
-// Students who get help from sources other than their partner must fully
-// acknowledge and credit those sources of help here. Instructors and TAs do
-// not need to be credited here, but tutors, friends, relatives, room mates,
-// strangers, and others do. If you received no outside help from either type
-// of source, then please explicitly indicate NONE.
-//
-// Persons: NONE
-// Online Sources: NONE
-//
-/////////////////////////////// 80 COLUMNS WIDE ///////////////////////////////
+///////////////////////////////////////// 100 COLUMNS WIDE /////////////////////////////////////////
+
 package application;
 
 import java.io.File;
@@ -40,13 +28,11 @@ import javafx.stage.Stage;
  * 
  * Bugs: none known
  * 
- * @author Qingqi Wu
+ * @author Alex Hertadi, Benjamin Tarmann, Qingqi Wu
  * @version 1.0
  * 
  */
 public class Financials {
-
-  
   
   /**
    * Create Financials based on the current BooKeeper Accounts
@@ -297,8 +283,6 @@ public class Financials {
    * @return
    */
   private static void sumFormula(Cell cell, List<Integer> rowNumToSum, int colNum) {
-
-
     String col = excelCol(colNum);
     String formula= "SUM("+col+(rowNumToSum.get(0)+1)+":"+col+(rowNumToSum.get(rowNumToSum.size()-1)+1)+")";
     //System.out.println("formula: " + formula);
@@ -413,14 +397,4 @@ public class Financials {
     
     return plainStyle;
   }
-  
-  
-  
-//  public static void main(String[] args) {
-//    int[] ca = {1, 0, 0};
-//    ArrayList<Account> accts = getAccounts(ca, new BooKeeper());
-//    for (Account acct : accts)
-//      System.out.println(acct.getAccountName());
-//
-//  }
 }

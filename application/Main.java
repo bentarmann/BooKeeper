@@ -1,25 +1,13 @@
-/////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
+/////////////////////////////////////////// FILE  HEADER ///////////////////////////////////////////
 //
-// Title: Main.java
-// Files: (a list of all source files used by that program)
-// Course: CS400 Lec001, Spring, 2020
+// Title: BooKeeper
+// Files: Main.java, BooKeeper.java, Bookings.java, Financials.java, Transaction.java
+// This File: Main.java
+// 
+// Name: Alex Hertadi, Benjamin Tarmann, Qingqi Wu
 //
-// Author: Qingqi Wu, Benjamin Tarmann, Alexander Hertadi
-// Email: qwu86@wisc.edu
-// Lecturer's Name: Debra Deppeler
-//
-///////////////////////////// CREDIT OUTSIDE HELP /////////////////////////////
-//
-// Students who get help from sources other than their partner must fully
-// acknowledge and credit those sources of help here. Instructors and TAs do
-// not need to be credited here, but tutors, friends, relatives, room mates,
-// strangers, and others do. If you received no outside help from either type
-// of source, then please explicitly indicate NONE.
-//
-// Persons: NONE
-// Online Sources: https://stackoverflow.com/questions/47995936/javafx-tables-inside-row-table
-//
-/////////////////////////////// 80 COLUMNS WIDE ///////////////////////////////
+///////////////////////////////////////// 100 COLUMNS WIDE /////////////////////////////////////////
+
 package application;
 
 import java.io.File;
@@ -54,7 +42,7 @@ import javafx.event.*;
  * 
  * Bugs: none known
  * 
- * @author Qingqi Wu
+ * @author Alex Hertadi, Benjamin Tarmann, Qingqi Wu
  * @version 1.0
  * 
  */
@@ -119,7 +107,7 @@ public class Main extends Application {
   /**
    * Initializes the main transaction journal window
    * 
-   * @param root
+   * @param stage main stage
    */
   private void initializeMain(Stage stage) {
 
@@ -174,16 +162,12 @@ public class Main extends Application {
     this.tabs.setLayoutX(0);
     this.tabs.setLayoutY(tabs.getLayoutY());
 
-
-
-    // TODO: add function to change the title
     Label title = new Label("Journal Entries");
     title.setFont(font);
     mainTop.getChildren().add(title);
 
 
     // Search bar
-
     ChoiceBox<String> searchChoice = new ChoiceBox();
     searchChoice.getItems().addAll("Transaction Number", "Date", "Account Name", "Amount");
     searchChoice.setValue("Transaction Number");
@@ -198,55 +182,6 @@ public class Main extends Application {
     VBox topBar = new VBox(tabs, mainTop);
 
     main.setTop(topBar);
-
-    // TableView table = tables.get(currentTable);
-
-
-    // table.setEditable(true);
-
-    // transaction number column
-    TableColumn<Integer, Transaction> transNumCol = new TableColumn<>("Transaction Number");
-    transNumCol.setMinWidth(125);
-    transNumCol
-        .setCellValueFactory(new PropertyValueFactory<Integer, Transaction>("transactionNumber"));
-    // table.getColumns().add(transNumCol);
-
-    // transaction date column
-    TableColumn<LocalDateTime, Transaction> dateCol = new TableColumn<>("Time");
-    dateCol.setMinWidth(100);
-    dateCol.setCellValueFactory(new PropertyValueFactory<LocalDateTime, Transaction>("dateString"));
-    // table.getColumns().add(dateCol);
-
-    // Transaction Details column
-    TableColumn detailsCol = new TableColumn("Transaction Details");
-    detailsCol.setMinWidth(300);// fill the rest of screen
-    // table.getColumns().add(detailsCol);
-
-
-    /*
-     * // Add expandable rows to show details table.setRowFactory(tr -> new TableRow<Transaction>()
-     * { Node transactionDetails; {// on selection of the row
-     * this.selectedProperty().addListener((i, wasSelected, isSelected) -> { if (isSelected) {
-     * transactionDetails = constructSubTable(getItem()); selected = getItem();
-     * this.getChildren().add(transactionDetails); } else {
-     * this.getChildren().remove(transactionDetails); } this.requestLayout(); });
-     * 
-     * }
-     * 
-     * 
-     * // calculate the pref height
-     * 
-     * @Override protected double computePrefHeight(double width) { if (isSelected()) { return
-     * super.computePrefHeight(width) + transactionDetails.prefHeight(20); } else { return
-     * super.computePrefHeight(width); } }
-     * 
-     * // layout the sub table
-     * 
-     * @Override protected void layoutChildren() { super.layoutChildren(); if (isSelected()) {
-     * double width = getWidth(); double paneHeight = transactionDetails.prefHeight(width);
-     * transactionDetails.resizeRelocate(transNumCol.getWidth() + dateCol.getWidth(), getHeight() -
-     * paneHeight, width, paneHeight); } } });
-     */
 
     // set search functionality
     searchText.setOnMouseClicked(e -> {
@@ -285,7 +220,6 @@ public class Main extends Application {
     } else {
       return;
     }
-
 
     searchText.textProperty().addListener((observable, oldValue, newValue) -> {
       // lambda expression filters the data of the table into a filtered list
@@ -352,17 +286,10 @@ public class Main extends Application {
   /**
    * Construct a sub table(vbox) containing details of transaction
    * 
-   * @param t
-   * @return
+   * @param t the transactions to get the details from
+   * @return a VBox containing details of transaction
    */
   private VBox constructSubTable(Transaction t) {
-
-    // create a delete button
-    // Image redX = new Image(getClass().getResourceAsStream("RedX.png"));
-    // Button xButton = new Button();
-    // xButton.setGraphic(new ImageView(redX));
-    // TODO:add deletion funtion
-
     // create the debit part
     Label debLabel = new Label("Debit");
     debLabel.setFont(font);
@@ -398,13 +325,12 @@ public class Main extends Application {
   }
 
   /**
-   * return a list of account names when given a list of accounts
+   * Return a list of account names when given a list of accounts
    * 
-   * @param accts
+   * @param accts the list of accounts
    * @return a list of account names in string
    */
   private List<String> getAccountNames(List<Account> accts) {
-
     List<String> acctNames = new ArrayList<>();
 
     for (Account acct : accts)
@@ -424,8 +350,6 @@ public class Main extends Application {
     Menu file = new Menu("File");
     //MenuItem newFile = new MenuItem("New File");
     //file.getItems().add(newFile);
-
-
 
     FileChooser fileChooser = new FileChooser();
     FileChooser.ExtensionFilter csvFilter =
@@ -449,15 +373,12 @@ public class Main extends Application {
       }
     });
 
-
     MenuItem exportFile = new MenuItem("Export");
     file.getItems().add(exportFile);
 
     exportFile.setOnAction(e -> {
       Financials.generateFinancials(bks.get(currentBooKeeper), primaryStage, font);
     });
-
-    // TODO:add a pointer to the current table in display
 
     Menu edit = new Menu("Edit");
     MenuItem insertEdit = new MenuItem("New Entry");
@@ -555,7 +476,6 @@ public class Main extends Application {
       dialog.show();
     });
     edit.getItems().add(insertAccount);
-
 
     MenuItem deleteEdit = new MenuItem("Delete Entry");
     deleteEdit.setOnAction(e -> {
@@ -731,10 +651,6 @@ public class Main extends Application {
     topMb.getMenus().add(window);
     topMb.getMenus().add(help);
     topMb.getMenus().add(about);
-
-    // TODO: Add MenuItem objects and add them to menu options for desired implementations
-
-
 
     // add elements to top
     BorderPane top = new BorderPane();
@@ -980,7 +896,6 @@ public class Main extends Application {
       importAlert.showAndWait();
     }
 
-
     return booking;
   }
 
@@ -993,7 +908,6 @@ public class Main extends Application {
    */
   private static ArrayList parseArrayList(String list, boolean isNumber) {
     list = list.replace("[", "").replace("]", "");
-
 
     String[] strList = list.split(",");
     ArrayList<String> result = new ArrayList<>(Arrays.asList(strList));
@@ -1072,7 +986,6 @@ public class Main extends Application {
 
       }
 
-
       // calculate the pref height
       @Override
       protected double computePrefHeight(double width) {
@@ -1114,7 +1027,7 @@ public class Main extends Application {
   /**
    * Return a new BooKeeper class to keep track of the accounts
    * 
-   * @return
+   * @return a new BooKeeper class to keep track of accounts
    */
   private static BooKeeper createBK() {
     BooKeeper bk = new BooKeeper();
@@ -1123,7 +1036,7 @@ public class Main extends Application {
   }
 
   /**
-   * updates the table displayed as the current table
+   * Updates the table displayed as the current table
    * 
    * @param values a collection of values
    */

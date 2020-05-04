@@ -1,28 +1,15 @@
+/////////////////////////////////////////// FILE  HEADER ///////////////////////////////////////////
+//
+//Title: BooKeeper
+//Files: Main.java, BooKeeper.java, Bookings.java, Financials.java, Transaction.java
+//This File: Bookings.java
+//
+//Name: Alex Hertadi, Benjamin Tarmann, Qingqi Wu
+//
+///////////////////////////////////////// 100 COLUMNS WIDE /////////////////////////////////////////
+
 package application;
 import java.util.Hashtable;
-
-//////////////////// ALL ASSIGNMENTS INCLUDE THIS SECTION /////////////////////
-//
-// Title:           Bookings.java 
-// Files:           (a list of all source files used by that program)
-// Course:          CS400 Lec001, Spring, 2020
-//
-// Author:          Qingqi Wu
-// Email:           qwu86@wisc.edu
-// Lecturer's Name: Debra Deppeler
-//
-///////////////////////////// CREDIT OUTSIDE HELP /////////////////////////////
-//
-// Students who get help from sources other than their partner must fully 
-// acknowledge and credit those sources of help here.  Instructors and TAs do 
-// not need to be credited here, but tutors, friends, relatives, room mates, 
-// strangers, and others do.  If you received no outside help from either type
-//  of source, then please explicitly indicate NONE.
-//
-// Persons:         NONE
-// Online Sources:  NONE
-//
-/////////////////////////////// 80 COLUMNS WIDE ///////////////////////////////
 
 /**
  * Bookings - hashtable that holds multiple Transactions, 
@@ -30,7 +17,7 @@ import java.util.Hashtable;
  * a collision resolution scheme
  * 
  * Bugs: none known
- * @author Qingqi Wu
+ * @author Alex Hertadi, Benjamin Tarmann, Qingqi Wu
  * @version 1.0
  * @param <K> Transaction number
  * @param <V> Transaction
@@ -41,6 +28,7 @@ public class Bookings extends Hashtable<String, Transaction> {
   public String title;
   private int latestTransactionID;
   private Transaction latestTransaction;
+  
   /**
    * Initializes the hashtable
    * @param title
@@ -85,7 +73,5 @@ public class Bookings extends Hashtable<String, Transaction> {
    */
   public void setLatestTransactionID(int latestTransactionID) {
     this.latestTransactionID = latestTransactionID;
-  }
-  
-  
+  }  
 }
